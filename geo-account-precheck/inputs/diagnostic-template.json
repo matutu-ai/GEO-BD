@@ -1,0 +1,32 @@
+{
+  "company": {
+    "name": "",
+    "aliases": [],
+    "brands": [],
+    "business": "",
+    "industry": [],
+    "products": [],
+    "services": [],
+    "customers": [],
+    "cases": [],
+    "locations": [],
+    "founders": [],
+    "experts": [],
+    "certificates": [],
+    "patents": [],
+    "media": [],
+    "website": "",
+    "contacts": "",
+    "reviews": [],
+    "negative_information": []
+  },
+  "materials": [],
+  "ai_observations": [],
+  "competitors": [],
+  "evidence": [],
+  "issues": [],
+  "keyword_directions": [],
+  "current_metrics": {},
+  "validation": {},
+  "constraints": {}
+}

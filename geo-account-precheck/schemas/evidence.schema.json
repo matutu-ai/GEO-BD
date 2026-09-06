@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Evidence Item",
+  "description": "A single traceable GEO evidence record.",
+  "type": "object",
+  "required": ["id", "claim", "status"],
+  "properties": {
+    "id": {"type": "string"},
+    "claim": {"type": "string"},
+    "entity": {"type": "string"},
+    "source": {"type": "string"},
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "official",
+        "government",
+        "media",
+        "third_party",
+        "user_provided",
+        "social",
+        "unknown"
+      ]
+    },
+    "date": {"type": "string"},
+    "confidence": {"type": "integer", "minimum": 0, "maximum": 100},
+    "verified": {"type": "boolean"},
+    "status": {"type": "string", "enum": ["FACT", "INFERENCE", "UNKNOWN"]},
+    "conflicts_with": {"type": "array", "items": {"type": "string"}},
+    "category": {"type": "string"}
+  },
+  "additionalProperties": true
+}

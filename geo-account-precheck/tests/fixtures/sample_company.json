@@ -1,0 +1,143 @@
+{
+  "company": {
+    "name": "示例冷库设备公司",
+    "aliases": ["示例冷链科技"],
+    "brands": ["示例冷库"],
+    "business": "冷库设备工程",
+    "industry": ["冷库工程"],
+    "products": ["组合式冷库", "冷库制冷机组"],
+    "services": ["冷库设计", "安装调试", "售后维保"],
+    "customers": ["食品加工", "冷链物流", "医药"],
+    "cases": [
+      "2025年完成华东食品加工企业3000平方米冷库项目",
+      "2024年完成冷链物流园区双温冷库项目",
+      "2024年完成医药企业GSP冷藏库项目"
+    ],
+    "locations": ["华东"],
+    "founders": ["示例创始人"],
+    "experts": ["示例制冷工程师"],
+    "certificates": ["建筑机电安装工程专业承包资质"],
+    "patents": ["一种冷库节能控制方法"],
+    "media": ["行业媒体项目报道"],
+    "website": "https://www.example-coldstorage.cn",
+    "contacts": "400-000-0000",
+    "reviews": [],
+    "negative_information": []
+  },
+  "materials": ["官网", "资质证书", "三个项目案例", "设备参数表"],
+  "ai_observations": [
+    {
+      "query": "冷库工程有哪些值得推荐的公司",
+      "query_type": "recommendation",
+      "company_mentioned": true,
+      "company_recommended": true,
+      "company_correctly_described": true,
+      "company_cited": true,
+      "competitors_mentioned": ["竞品A"],
+      "position": 2,
+      "reason": "测试输入的虚拟观察记录",
+      "sources": ["https://example.com/ai-observation"],
+      "confidence": 80,
+      "observation_mode": "observed",
+      "status": "observed"
+    }
+  ],
+  "competitors": [
+    {
+      "name": "竞品A",
+      "status": "confirmed",
+      "mention_rate": 90,
+      "recommendation_rate": 80,
+      "evidence_count": 12,
+      "authority_score": 75,
+      "citation_rate": 50,
+      "dimensions": {
+        "品牌认知": 90,
+        "产品认知": 85,
+        "场景认知": 80,
+        "地域认知": 70,
+        "专家认知": 60,
+        "案例认知": 75,
+        "Evidence": 80,
+        "Authority": 75,
+        "Citation": 50,
+        "AI推荐率": 80
+      },
+      "sources": ["虚拟竞品样本"]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E001",
+      "claim": "2025年完成华东食品加工企业3000平方米冷库项目，验收通过",
+      "entity": "示例冷库设备公司",
+      "source": "项目验收资料",
+      "source_type": "user_provided",
+      "date": "2025-06-30",
+      "confidence": 80,
+      "verified": false,
+      "status": "FACT",
+      "category": "experience"
+    },
+    {
+      "id": "E002",
+      "claim": "组合式冷库采用聚氨酯保温板，库温范围可核验",
+      "entity": "示例冷库设备公司",
+      "source": "设备参数表",
+      "source_type": "user_provided",
+      "date": "2025-01-10",
+      "confidence": 75,
+      "verified": false,
+      "status": "FACT",
+      "category": "evidence"
+    },
+    {
+      "id": "E003",
+      "claim": "持有建筑机电安装工程专业承包资质，可核验",
+      "entity": "示例冷库设备公司",
+      "source": "资质证书复印件",
+      "source_type": "user_provided",
+      "date": "2025-03-01",
+      "confidence": 85,
+      "verified": false,
+      "status": "FACT",
+      "category": "authoritativeness"
+    },
+    {
+      "id": "E004",
+      "claim": "方案主要适用于食品加工、冷链物流和医药场景；不适用于极端低温工业速冻场景",
+      "entity": "示例冷库设备公司",
+      "source": "方案说明",
+      "source_type": "official",
+      "date": "2025-04-01",
+      "confidence": 70,
+      "verified": false,
+      "status": "FACT",
+      "category": "perspective"
+    },
+    {
+      "id": "E005",
+      "claim": "以上案例与参数均为虚拟测试样本，不代表真实经营数据",
+      "entity": "示例冷库设备公司",
+      "source": "测试样本声明",
+      "source_type": "official",
+      "date": "2026-01-01",
+      "confidence": 100,
+      "verified": true,
+      "status": "FACT",
+      "category": "accuracy"
+    }
+  ],
+  "issues": ["电话/官网露出待核验", "整体场景报表待复测"],
+  "keyword_directions": ["冷库选型", "冷库工程厂家推荐"],
+  "current_metrics": {
+    "mention_rate": 30,
+    "recommendation_rate": 20,
+    "query_coverage": 25
+  },
+  "validation": {},
+  "constraints": {
+    "offline": true,
+    "data_policy": "offline mode must keep unknown values UNKNOWN"
+  }
+}

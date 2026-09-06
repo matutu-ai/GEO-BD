@@ -1,3 +1,3 @@
 interface:
-  display_name: "GEO 账户前背调"
-  short_description: "GEO/讯灵账户资料背调、画像关键词与 AI 效果排查"
+  display_name: "GEO Diagnostic Engine"
+  short_description: "企业 GEO 全链路诊断、AI/Query/竞品/Evidence/EEAAP-EEAT/Gap/Opportunity/复测，并保留讯灵账户背调与效果排查"

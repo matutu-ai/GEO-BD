@@ -1,0 +1,83 @@
+{
+  "company": {
+    "name": "示例自动化设备公司",
+    "aliases": ["示例自动化"],
+    "brands": ["示例自动化"],
+    "business": "工业自动化设备销售、安装与售后维保",
+    "industry": ["工业自动化"],
+    "products": ["PLC 控制柜", "输送线"],
+    "services": ["安装调试", "售后维保"],
+    "customers": ["汽车零部件工厂", "电子制造工厂"],
+    "cases": ["2025年完成某汽车零部件工厂输送线改造项目"],
+    "locations": ["华东"],
+    "founders": [],
+    "experts": ["示例自动化工程师"],
+    "certificates": ["示例设备安装资质"],
+    "patents": [],
+    "media": [],
+    "website": "https://example-automation.cn",
+    "contacts": "021-0000-0000",
+    "reviews": [],
+    "negative_information": []
+  },
+  "materials": ["官网", "一个真实项目案例", "设备安装资质"],
+  "ai_observations": [
+    {
+      "query": "工业自动化设备有哪些值得推荐的公司",
+      "query_type": "recommendation",
+      "company_mentioned": true,
+      "company_recommended": true,
+      "company_correctly_described": true,
+      "company_cited": true,
+      "position": 3,
+      "reason": "虚拟示例观察，请替换成真实 AI 回答",
+      "sources": ["https://example.com/ai-observation"],
+      "confidence": 80,
+      "observation_mode": "observed",
+      "status": "observed"
+    }
+  ],
+  "competitors": [
+    {
+      "name": "示例竞品公司",
+      "status": "confirmed",
+      "mention_rate": 70,
+      "recommendation_rate": 60,
+      "evidence_count": 10,
+      "authority_score": 70,
+      "citation_rate": 40,
+      "sources": ["虚拟示例竞品资料"]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E001",
+      "claim": "2025年完成某汽车零部件工厂输送线改造项目并验收",
+      "entity": "示例自动化设备公司",
+      "source": "项目验收资料（虚拟示例）",
+      "source_type": "user_provided",
+      "date": "2025-06-30",
+      "confidence": 70,
+      "verified": false,
+      "status": "FACT",
+      "category": "experience"
+    },
+    {
+      "id": "E002",
+      "claim": "持有示例设备安装资质",
+      "entity": "示例自动化设备公司",
+      "source": "资质证书（虚拟示例）",
+      "source_type": "user_provided",
+      "date": "",
+      "confidence": 70,
+      "verified": false,
+      "status": "FACT",
+      "category": "authoritativeness"
+    }
+  ],
+  "issues": [],
+  "keyword_directions": [],
+  "current_metrics": {},
+  "validation": {},
+  "constraints": {}
+}

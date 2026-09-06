@@ -1,0 +1,320 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GEO Diagnostic Report",
+  "description": "Top-level V2 GEO diagnostic report. Score fields are diagnostic indicators, not ranking guarantees.",
+  "type": "object",
+  "required": [
+    "meta",
+    "company",
+    "entity",
+    "ai_cognition",
+    "query_matrix",
+    "competitors",
+    "evidence_graph",
+    "eeaap",
+    "eeat",
+    "gaps",
+    "opportunities",
+    "recommendations",
+    "validation",
+    "scores",
+    "data_quality",
+    "scenarios",
+    "keywords",
+    "citations",
+    "nap",
+    "ai_tests"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["engine", "version", "generated_at"],
+      "properties": {
+        "engine": {"type": "string"},
+        "version": {"type": "string"},
+        "generated_at": {"type": "string"},
+        "offline": {"type": "boolean"},
+        "research_mode": {"type": "string"},
+        "diagnostic_note": {"type": "string"}
+      }
+    },
+    "company": {"$ref": "company.schema.json"},
+    "entity": {
+      "type": "object",
+      "required": ["research_mode", "fields", "raw_materials", "missing"],
+      "properties": {
+        "research_mode": {"type": "string"},
+        "fields": {"type": "object"},
+        "raw_materials": {"type": "array"},
+        "missing": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "ai_cognition": {"$ref": "cognition.schema.json"},
+    "query_matrix": {"$ref": "query.schema.json"},
+    "competitors": {"$ref": "competitor.schema.json"},
+    "evidence_graph": {
+      "type": "object",
+      "required": ["nodes", "edges", "items"],
+      "properties": {
+        "nodes": {"type": "array"},
+        "edges": {"type": "array"},
+        "items": {
+          "type": "array",
+          "items": {"$ref": "evidence.schema.json"}
+        }
+      }
+    },
+    "eeaap": {
+      "type": "object",
+      "required": ["experience", "evidence", "authoritativeness", "accuracy", "perspective", "overall"],
+      "properties": {
+        "experience": {"type": "integer", "minimum": 0, "maximum": 100},
+        "evidence": {"type": "integer", "minimum": 0, "maximum": 100},
+        "authoritativeness": {"type": "integer", "minimum": 0, "maximum": 100},
+        "accuracy": {"type": "integer", "minimum": 0, "maximum": 100},
+        "perspective": {"type": "integer", "minimum": 0, "maximum": 100},
+        "overall": {"type": "integer", "minimum": 0, "maximum": 100},
+        "gaps": {"type": "array", "items": {"type": "string"}},
+        "status": {"type": "string"}
+      }
+    },
+    "eeat": {
+      "type": "object",
+      "required": ["experience", "expertise", "authoritativeness", "trustworthiness", "overall"],
+      "properties": {
+        "experience": {"type": "integer", "minimum": 0, "maximum": 100},
+        "expertise": {"type": "integer", "minimum": 0, "maximum": 100},
+        "authoritativeness": {"type": "integer", "minimum": 0, "maximum": 100},
+        "trustworthiness": {"type": "integer", "minimum": 0, "maximum": 100},
+        "overall": {"type": "integer", "minimum": 0, "maximum": 100},
+        "gaps": {"type": "array", "items": {"type": "string"}},
+        "status": {"type": "string"}
+      }
+    },
+    "gaps": {
+      "type": "object",
+      "required": ["gaps", "status", "count"],
+      "properties": {
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type", "severity", "score", "reason"],
+            "properties": {
+              "type": {"type": "string"},
+              "severity": {"type": "string", "enum": ["critical", "high", "medium", "low"]},
+              "score": {"type": "integer", "minimum": 0, "maximum": 100},
+              "reason": {"type": "string"},
+              "evidence": {"type": "array", "items": {"type": "string"}},
+              "affected_queries": {"type": "array", "items": {"type": "string"}},
+              "competitor_advantage": {"type": "array", "items": {"type": "string"}},
+              "recommended_action": {"type": "string"}
+            }
+          }
+        },
+        "status": {"type": "string"},
+        "count": {"type": "integer"}
+      }
+    },
+    "opportunities": {
+      "type": "object",
+      "required": ["status", "opportunities", "count"],
+      "properties": {
+        "status": {"type": "string"},
+        "count": {"type": "integer"},
+        "opportunities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "score", "priority"],
+            "properties": {
+              "title": {"type": "string"},
+              "score": {"type": "integer", "minimum": 0, "maximum": 100},
+              "priority": {"type": "string", "enum": ["P0", "P1", "P2", "P3"]},
+              "business_value": {"type": "integer", "minimum": 0, "maximum": 100},
+              "ai_demand": {"type": "integer", "minimum": 0, "maximum": 100},
+              "competitor_gap": {"type": "integer", "minimum": 0, "maximum": 100},
+              "evidence_availability": {"type": "integer", "minimum": 0, "maximum": 100},
+              "feasibility": {"type": "integer", "minimum": 0, "maximum": 100},
+              "reason": {"type": "string"},
+              "status": {"type": "string"},
+              "basis": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "object",
+      "required": ["status", "count", "actions"],
+      "properties": {
+        "status": {"type": "string"},
+        "count": {"type": "integer"},
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["task", "priority"],
+            "properties": {
+              "task": {"type": "string"},
+              "priority": {"type": "string"},
+              "problem": {"type": "string"},
+              "why": {"type": "string"},
+              "evidence": {"type": "array", "items": {"type": "string"}},
+              "impact": {"type": "array", "items": {"type": "string"}},
+              "action": {"type": "string"},
+              "required_materials": {"type": "array", "items": {"type": "string"}},
+              "verification": {"type": "string"},
+              "source_doc_heuristics": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": ["status", "basis"],
+      "properties": {
+        "status": {"type": "string"},
+        "improvement_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "basis": {"type": "string"},
+        "metric_changes": {"type": "array"},
+        "plan": {"type": "object"},
+        "before_metrics": {"type": "object"},
+        "after_metrics": {"type": "object"}
+      }
+    },
+    "scores": {
+      "type": "object",
+      "properties": {
+        "entity_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "ai_cognition_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "query_coverage_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "evidence_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "eeaap_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "eeat_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "competitor_gap_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "citation_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "trust_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "scenario_coverage_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "keyword_coverage_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "nap_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "geo_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "data_completeness": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "status": {"type": "string"},
+        "basis": {"type": "object"},
+        "available_dimensions": {"type": "array", "items": {"type": "string"}},
+        "insufficient_dimensions": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "data_quality": {
+      "type": "object",
+      "required": ["score", "fact_count", "inference_count", "unknown_count"],
+      "properties": {
+        "score": {"type": "integer", "minimum": 0, "maximum": 100},
+        "low_quality": {"type": "boolean"},
+        "fact_count": {"type": "integer", "minimum": 0},
+        "inference_count": {"type": "integer", "minimum": 0},
+        "unknown_count": {"type": "integer", "minimum": 0},
+        "verified_count": {"type": "integer", "minimum": 0},
+        "unverified_count": {"type": "integer", "minimum": 0},
+        "source_count": {"type": "integer", "minimum": 0},
+        "evidence_completeness": {"type": "integer", "minimum": 0, "maximum": 100},
+        "source_completeness": {"type": "integer", "minimum": 0, "maximum": 100},
+        "verification_completeness": {"type": "integer", "minimum": 0, "maximum": 100},
+        "warning": {"type": "string"}
+      }
+    },
+    "scenarios": {"$ref": "scenario.schema.json"},
+    "keywords": {
+      "type": "object",
+      "required": ["status", "coverage", "basis"],
+      "properties": {
+        "status": {"type": "string"},
+        "coverage": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "basis": {"type": "string"},
+        "keyword_list": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["keyword", "type", "priority"],
+            "properties": {
+              "keyword": {"type": "string"},
+              "type": {"type": "string"},
+              "intent": {"type": "string"},
+              "scenario": {"type": "string"},
+              "priority": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "citations": {
+      "type": "object",
+      "required": ["status", "basis"],
+      "properties": {
+        "status": {"type": "string"},
+        "basis": {"type": "string"},
+        "mention_rate": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "recommendation_rate": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "citation_rate": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "competitor_mention_rate": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "source_coverage": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "competitors_mentioned": {"type": "array", "items": {"type": "string"}},
+        "coverage_observed": {"type": "boolean"}
+      }
+    },
+    "nap": {
+      "type": "object",
+      "required": ["status", "basis", "fields", "conflicts", "complete"],
+      "properties": {
+        "status": {"type": "string"},
+        "basis": {"type": "string"},
+        "fields": {"type": "object"},
+        "conflicts": {"type": "array", "items": {"type": "string"}},
+        "complete": {"type": "boolean"},
+        "consistent": {"type": ["boolean", "null"]}
+      }
+    },
+    "ai_tests": {
+      "type": "object",
+      "required": ["status", "basis", "insufficient_data", "total"],
+      "properties": {
+        "status": {"type": "string"},
+        "basis": {"type": "string"},
+        "insufficient_data": {"type": "boolean"},
+        "total": {"type": "integer", "minimum": 0},
+        "mention_rate": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "recommendation_rate": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "citation_rate": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+        "average_position": {"type": ["number", "null"]},
+        "competitor_presence": {"type": "array", "items": {"type": "string"}},
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["query", "status"],
+            "properties": {
+              "query": {"type": "string"},
+              "query_type": {"type": "string"},
+              "platform": {"type": "string"},
+              "timestamp": {"type": "string"},
+              "response": {"type": "string"},
+              "company_mentioned": {"type": "boolean"},
+              "company_recommended": {"type": "boolean"},
+              "company_cited": {"type": "boolean"},
+              "citation_found": {"type": "boolean"},
+              "position": {"type": ["number", "null"]},
+              "status": {"type": "string"},
+              "observation_mode": {"type": "string"},
+              "sources": {"type": "array", "items": {"type": "string"}},
+              "competitors_mentioned": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

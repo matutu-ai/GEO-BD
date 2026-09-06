@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Company Profile",
+  "description": "Structured company entity used as GEO diagnostic input and output.",
+  "type": "object",
+  "required": ["name", "business"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Company legal or operating name. Empty or UNKNOWN means not provided."
+    },
+    "aliases": {"type": "array", "items": {"type": "string"}},
+    "business": {"type": "string"},
+    "industry": {"type": "array", "items": {"type": "string"}},
+    "products": {"type": "array", "items": {"type": "string"}},
+    "services": {"type": "array", "items": {"type": "string"}},
+    "customers": {"type": "array", "items": {"type": "string"}},
+    "cases": {"type": "array", "items": {"type": "string"}},
+    "locations": {"type": "array", "items": {"type": "string"}},
+    "founders": {"type": "array", "items": {"type": "string"}},
+    "experts": {"type": "array", "items": {"type": "string"}},
+    "competitors": {"type": "array", "items": {"type": "string"}},
+    "website": {"type": "string"},
+    "contacts": {"type": "string"},
+    "raw": {
+      "type": ["object", "string", "null"],
+      "description": "Original operator input kept for traceability."
+    }
+  },
+  "additionalProperties": true
+}

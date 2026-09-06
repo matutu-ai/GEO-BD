@@ -1,97 +1,245 @@
 ---
-name: geo-account-precheck
-description: 执行 GEO/讯灵账户上线前的资料背调、账户画像与场景关键词自查，并排查上线后 AI 不推荐、电话/官网露出不理想等效果问题。当用户要求 GEO 运营前背调、讯灵画像自查、EEAAP/EEAT 检测、账户画像搭建、场景关键词或 AI 推荐效果排查时使用。
+name: geo-diagnostic-engine
+description: 执行企业 GEO 全链路诊断，包括企业实体研究、AI 认知分析、Query Matrix、竞品认知、Evidence Graph、EEAAP/EEAT 评分、GEO Gap、Opportunity Score、优化任务和复测；同时保留 GEO/讯灵账户前置背调、画像关键词与 AI 推荐效果排查能力。当用户要求 GEO 诊断、实体/认知/竞品/证据/机会/推荐/复测，或讯灵账户画像自查与效果排查时使用。
 ---
 
-# Geo Account Precheck
+# GEO Diagnostic Engine V2
 
-这个 Skill 用来在 GEO 账户上线前做资料背调，也在上线后排查 AI 不推荐、电话/官网露出不理想等效果问题。它把讯灵画像自查指令转成可执行流程，目标是让豆包等 AI 搜索/推荐平台基于真实、可核验的信息推荐企业。
+本 Skill 把 GEO-BD 从“前置背调 + 固定规则报告生成器”升级为可运行、可测试、可扩展的 GEO 诊断引擎。它读取企业资料，先把事实结构化，再做 AI 认知、Query、竞品、证据、EEAAP/EEAT、Gap、机会、行动与复测分析，最终输出可解释的诊断报告。
 
-## 底线
+原有 `generate_precheck.py` 全部能力继续保留，用于 GEO/讯灵账户上线前资料背调和上线后电话/官网/整体场景问题排查。V2 主入口是 `run_diagnostic.py`。
 
-- 所有关键判断必须区分 `FACT`、`INFERENCE`、`UNKNOWN`。
-- 禁止编造项目案例、参数、客户评价、荣誉、资质、联系方式和负面舆情证据。
-- 通篇宣传话术是豆包不推荐的第一原因；画像内容必须落到证据、场景、边界和可核验细节。
-- 用户没给资料时，先通过公开搜索补足，不能直接凭公司名生成虚构内容。
-- 提示词目前测试效果以“豆包”平台为准，但检查逻辑可复用于其他 AI 搜索/推荐平台。
+## 什么时候使用
 
-## 关键判定
+- 需要回答“AI 知道客户什么、不知道什么、为什么推荐竞品而不是客户”。
+- 需要把客户资料变成企业实体、Evidence Graph、Query Matrix 和竞品差距。
+- 需要知道客户在哪些搜索问题中缺席、缺什么证据、最大 GEO 差距在哪里。
+- 需要按机会优先级得到 P0/P1/P2/P3 行动清单和复测方法。
+- 需要旧的 GEO/讯灵前置背调、九大画像自查、EEAAP/EEAT 检测或 AI 效果问题排查。
 
-- 搜不到信任基础：重点查 `EEAT`，看专家、资质、品牌名气、媒体报道。
-- 豆包不推荐、回答不提及这家企业：优先完整走 `EEAAP`。
-- 只有资质和荣誉往往不足以触发推荐，必须继续检查证据、准确性、视角和真实经验。
+## 输入
 
-## 执行顺序
-
-1. 收集输入：公司全称、业务、目标客群、已收集资料、当前 AI 搜索/推荐结果、已知问题。
-2. 资料自查：先问豆包“XXX 是做什么的”“核心优势是什么”“最核心优势是什么”，再用 `EEAAP` 做查缺补漏，并检查负面舆情。
-3. 账户画像：补齐资料后按九大板块创作，每板块控制在 1000 字以内，必须用可核验信息和场景表达。
-4. 场景关键词：把真实用户高频搜索需求和痛点拆成 3 大类，每类词根一致。
-5. 输出预背调报告：包含资料缺口、画像状态、关键词方向、EEAAP 检查、行动清单。
-6. 效果问题排查：账户整体场景报表不理想时，先排查训练逻辑、投喂周期和实际发布情况；电话/官网露出不理想时，先排查 NAP、知识库和画像设置。
-
-## 原始指令
-
-所有提示词模板、九大画像板块框架、发布运营策略和 EEAAP/EEAT 检测法则见 [references/source-doc.md](references/source-doc.md)。涉及具体排查时直接读取该文件，不要凭记忆改写。
-
-## 可执行工具
-
-先生成输入 JSON 模板，再按实际情况填写：
-
-```bash
-python scripts/generate_precheck.py --template --output inputs.json
-```
-
-需要生成结构化预背调报告时运行：
-
-```bash
-python scripts/generate_precheck.py --input inputs.json --output outputs/precheck.md
-```
-
-输入 JSON 最少包含：
+V2 使用自然的客户资料 JSON，至少可以包含：
 
 ```json
 {
-  "company": "公司全称",
-  "business": "公司业务",
-  "customers": "目标消费群体",
-  "materials": "已收集资料",
-  "current_ai_cognition": "当前 AI 对公司的认知",
-  "negative_publicity": "已核验负面舆情",
-  "issues": ["电话/官网露出不理想", "账户整体场景报表数据不理想"],
-  "keyword_directions": ["场景关键词方向 1", "场景关键词方向 2", "场景关键词方向 3"],
-  "evidence": {
-    "experience": "真实项目证据",
-    "evidence": "可核验参数/案例/实拍",
-    "authoritativeness": "资质/证书/第三方合作",
-    "accuracy": "准确表述与无夸大说明",
-    "perspective": "适用场景与局限说明"
-  }
+  "company": {
+    "name": "公司全称",
+    "aliases": ["公司别名"],
+    "brands": ["品牌名"],
+    "business": "主营业务",
+    "industry": ["行业"],
+    "products": ["产品"],
+    "services": ["服务"],
+    "customers": ["目标客群"],
+    "cases": ["真实客户案例"],
+    "locations": ["地域"],
+    "founders": ["创始人"],
+    "experts": ["专家"],
+    "certificates": ["资质"],
+    "patents": ["专利"],
+    "media": ["媒体报道"],
+    "website": "官网",
+    "contacts": "联系方式",
+    "reviews": ["客户评价"],
+    "negative_information": ["已核验负面信息"]
+  },
+  "materials": [],
+  "ai_observations": [],
+  "competitors": [],
+  "evidence": [],
+  "issues": [],
+  "keyword_directions": [],
+  "current_metrics": {},
+  "validation": {},
+  "constraints": {}
 }
 ```
 
-生成上线后的效果问题自查报告：
+`python scripts/run_diagnostic.py --template` 会输出完整模板。用户不需要填写引擎内部字段，Engine 负责结构化。
+
+## 输出
+
+运行后得到 Markdown 报告和 `diagnostic.json`。JSON 顶层结构为：
+
+`meta`、`company`、`entity`、`ai_cognition`、`query_matrix`、`competitors`、`evidence_graph`、`eeaap`、`eeat`、`gaps`、`opportunities`、`recommendations`、`validation`、`scores`、`data_quality`、`scenarios`、`keywords`、`citations`、`nap`、`ai_tests`。
+
+Markdown 固定 19 个章节：
+
+1. Executive Summary
+2. Company Entity
+3. AI Cognition
+4. Query Intelligence
+5. Competitor Intelligence
+6. Evidence Graph
+7. EEAAP
+8. EEAT
+9. Scenario Coverage
+10. Keyword Coverage
+11. AI Test
+12. NAP / Trust
+13. GEO Gap
+14. GEO Opportunity
+15. P0/P1/P2/P3 Action Plan
+16. Next Test
+17. Validation Plan
+18. Data Quality
+19. Unknown / Missing Data
+
+## 执行流程
+
+1. 读取客户资料并确认已有/缺失内容。
+2. 将资料结构化为企业实体，逐条保留来源与 `FACT/INFERENCE/UNKNOWN`。
+3. 建立 Evidence Graph，把声明、来源、日期、核验状态落到节点和边。
+4. 检查当前 AI 认知，只用真实 `observed/provided` 观察。
+5. 生成 Query Matrix 并分类意图。
+6. 识别竞品，candidate 必须人工确认后才能作为事实。
+7. 计算竞品差距。
+8. 计算 EEAAP。
+9. 计算 EEAT。
+10. 计算 GEO Gaps。
+11. 计算 Opportunity Score。
+12. 生成 P0/P1/P2/P3。
+13. 生成可执行任务和所需资料。
+14. 生成复测计划。
+15. 输出诊断报告。
+
+## 第一原则：严禁虚构
+
+- 企业信息、案例、参数、客户、资质、荣誉、电话、官网、负面舆情、AI 推荐结果、竞品和引用来源均不能编造。
+- 用户提供的资料可以记为 `FACT`，来源为 `user_provided`，`verified=false`，不冒充已联网核验。
+- 没有数据时必须输出 `UNKNOWN`，不能把猜测写成结论。
+- `INFERENCE` 只能用于引擎基于已有输入生成的候选 Query、机会排序等内部推导。
+- 模拟 AI 回答永不参与真实评分；`simulated/unknown` 观察会让认知和覆盖率保持 `UNKNOWN`。
+- 没有可靠竞品时输出 `UNKNOWN`，不自动制造竞品；竞品需要 `candidate/confirmed` 状态与来源。
+- Evidence 评分检查来源、日期、可核验性、第三方/第一方、冲突、过期、自述、夸张和绝对化表述。
+- 没有真实 AI 测试结果时，Mention/Recommendation/Citation/Scenario/Keyword 覆盖率必须保持 `NOT_RUN` 或 `UNKNOWN`，不能拿生成 Query 的意图冒充覆盖率。
+
+## 评分边界
+
+所有分数都是可追溯的 Diagnostic Indicator，不是 AI 平台真实排名保证，也不承诺发布数量会带来固定效果。
+
+- GEO Diagnostic Score：按 Entity 10%、AI Cognition 15%、Evidence 20%、EEAAP 15%、EEAT 10%、Scenario 10%、Keyword 5%、Citation 10%、NAP/Trust 5% 九维加权；缺失维度不按 0 计算。
+- Data Quality Score：统计 FACT/INFERENCE/UNKNOWN、已核验/未核验、来源数、Evidence/Source/Verification Completeness。
+- 数据质量低时报告必须提示“当前诊断结论可信度有限”。
+- source-doc 里的 20 篇、60-80 篇、7 天、7-15 天、100/200/500 篇等是 Operational Heuristic，不是 Guaranteed Rule。
+
+## 运行 V2
+
+完整使用示例：
 
 ```bash
-python scripts/generate_precheck.py --input inputs.json --audit --output outputs/issue-audit.md
+python scripts/run_diagnostic.py \
+  --input inputs/diagnostic-template.json \
+  --output reports/diagnostic.md \
+  --json reports/diagnostic.json \
+  --offline
 ```
 
-快速输出发布与训练核对清单：
+常用命令：
 
 ```bash
+# 生成输入模板
+python scripts/run_diagnostic.py --template
+
+# 只打印一屏结论，不写文件
+python scripts/run_diagnostic.py \
+  --input examples/01-quickstart.json \
+  --summary \
+  --offline
+
+# 生成 Markdown 与 JSON 报告
+python scripts/run_diagnostic.py \
+  --input tests/fixtures/sample_company.json \
+  --output reports/diagnostic.md \
+  --json reports/diagnostic.json \
+  --needs-input reports/needs-input.md \
+  --offline
+
+# 仅生成 Markdown
+python scripts/run_diagnostic.py \
+  --input tests/fixtures/sample_company.json \
+  --markdown reports/diagnostic.md \
+  --offline
+
+# 下一轮：保留静态企业资料，清空旧观察/竞品/Evidence/指标
+python scripts/prepare_round.py \
+  --from reports/diagnostic.json \
+  --out inputs/round2.json
+
+# run_diagnosis.py 是兼容别名
+python scripts/run_diagnosis.py \
+  --input tests/fixtures/sample_company.json \
+  --output reports/diagnostic.md \
+  --json reports/diagnostic.json \
+  --offline
+
+# 单独分析真实 AI 测试记录
+python scripts/run_ai_test.py \
+  --tests inputs/ai-test.json \
+  --output reports/ai-test-result.json
+
+# 比较 Before/After 两轮诊断
+python scripts/compare_reports.py \
+  --before reports/before.json \
+  --after reports/after.json \
+  --output reports/comparison.md
+
+# 数据不足时以非零退出码结束
+python scripts/run_diagnostic.py \
+  --input inputs/empty.json \
+  --check
+
+# 校验已有报告
+python scripts/validate_diagnostic.py \
+  --input reports/diagnostic.json
+```
+
+参数说明：
+
+- `--output`：写 Markdown 报告。
+- `--markdown`：写 Markdown 报告（与 `--output` 二选一即可）。
+- `--json`：写结构化 `diagnostic.json`。
+- `--check`：资料不足时返回非零退出码。
+- `--template`：输出输入模板。
+- `--offline`：不联网运行，缺失内容保持 `UNKNOWN`。
+- `--research-mode`：`manual/provided/external/offline`，当前默认 `offline`。
+- `--validate`：校验已有报告 JSON。
+- `--summary`：只打印一屏 `GEO Score / Top / Evidence / Missing / AI Test`。
+- `--needs-input`：把待补资料写成 Markdown 清单。
+
+写文件命令默认在终端给出一屏摘要，完整报告见输出文件；`--summary` 可在不写文件时复用
+同一屏摘要。新用户先读 `examples/00-quickstart.md`。
+
+## 保留旧功能
+
+`scripts/generate_precheck.py` 继续向后兼容：
+
+```bash
+python scripts/generate_precheck.py --template --output inputs.json
+
+python scripts/generate_precheck.py \
+  --input inputs.json \
+  --output outputs/precheck.md
+
+python scripts/generate_precheck.py \
+  --input inputs.json \
+  --audit \
+  --output outputs/issue-audit.md
+
 python scripts/generate_precheck.py --checklist
+
+python scripts/generate_precheck.py --check
 ```
 
-使用 `--check` 时，脚本会对缺失的公司基础字段和 EEAAP 证据返回非零退出码，方便在交付前把关。排查电话/官网露出时，在 `issues` 中写明问题，脚本会生成对应的 NAP 与训练核对项。
+旧流程输出原有报告：资料自查、账户画像与关键词、EEAAP 检测、行动清单、电话/官网/NAP 排查。
 
-## 输出边界
+## 数据与运行环境
 
-本 skill 只输出 GEO/讯灵账户预背调报告和上线后效果问题自查报告，不附带最终运营内容生成功能。背调报告以原飞书《2026讯灵画像自查指令》为执行依据，内容覆盖资料自查、账户画像与关键词方向、EEAAP 检测、行动清单和资料缺口。
+当前没有接入真实搜索/AI API 时，引擎使用 `ManualProvider` 或 `OfflineProvider`。Provider 接口已经预留 `research_company/search_evidence/find_competitors/run_query/batch_run/verify`，未来可以接入 Web Search、豆包、ChatGPT、Gemini、Perplexity、企业知识库等，不需要改评分与报告逻辑。
 
-## 资料缺口处理
+运行前若客户没有给足资料、真实 AI 观察或竞品确认数据，先明确“当前不能生成哪些结论”，再补资料。复测必须使用同一批 Query 和真实观察，Before/After 缺失时 Validation 输出 `UNKNOWN`。
 
-分析结束后必须单独列出资料缺口，不能假装完成：
+## 参考资料
 
-- 缺失公司全称、业务、目标客群、资质、案例、评价、舆情来源或 EEAAP 证据时，逐项写明。
-- 每个缺口给出补齐优先级、建议来源和下一步方向。
-- 如果用户提供的资料不足，先明确“当前不能生成哪些内容”，再给出补充建议。
+[references/source-doc.md](references/source-doc.md) 保留为 Legacy Operational Knowledge：九大画像、EEAAP、EEAT、发布策略、训练策略、NAP 和效果排查规则都在其中。引擎优先真实数据、证据、AI 观察、Query 结果和竞品差距，再参考这些运营经验。

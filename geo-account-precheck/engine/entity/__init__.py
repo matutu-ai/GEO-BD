@@ -1,0 +1,1 @@
+"""Entity research subpackage."""

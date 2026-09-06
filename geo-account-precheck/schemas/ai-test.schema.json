@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI Test Observation",
+  "description": "One real AI search/chat answer record. Simulated or missing records are never used as real tests.",
+  "type": "object",
+  "required": ["query"],
+  "properties": {
+    "query": {"type": "string"},
+    "query_type": {"type": "string"},
+    "platform": {"type": "string"},
+    "response": {"type": "string"},
+    "timestamp": {"type": "string"},
+    "company_mentioned": {"type": "boolean"},
+    "company_recommended": {"type": "boolean"},
+    "company_cited": {"type": "boolean"},
+    "citation_found": {"type": "boolean"},
+    "position": {"type": ["integer", "null"], "minimum": 1},
+    "competitors_mentioned": {"type": "array", "items": {"type": "string"}},
+    "sources": {"type": "array", "items": {"type": "string"}},
+    "reason": {"type": "string"},
+    "confidence": {"type": "integer", "minimum": 0, "maximum": 100},
+    "observation_mode": {"type": "string"},
+    "status": {"type": "string"}
+  }
+}

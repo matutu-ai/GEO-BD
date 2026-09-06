@@ -1,0 +1,1 @@
+"""Competitor intelligence subpackage."""

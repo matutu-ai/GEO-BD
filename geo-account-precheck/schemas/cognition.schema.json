@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI Cognition",
+  "description": "AI cognition observations and the computed cognition state.",
+  "type": "object",
+  "required": ["observation_mode", "status", "observations", "count", "basis"],
+  "properties": {
+    "observation_mode": {
+      "type": "string",
+      "enum": ["observed", "provided", "simulated", "mixed", "UNKNOWN", "unknown"]
+    },
+    "status": {"type": "string", "enum": ["OBSERVED", "UNKNOWN", "unknown"]},
+    "score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "observations": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/observation"}
+    },
+    "count": {"type": "integer", "minimum": 0},
+    "basis": {"type": "string"},
+    "query_bank": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["query", "query_type"],
+        "properties": {
+          "query": {"type": "string"},
+          "query_type": {"type": "string"}
+        }
+      }
+    }
+  },
+  "additionalProperties": true,
+  "definitions": {
+    "observation": {
+      "type": "object",
+      "required": ["query", "status"],
+      "properties": {
+        "query": {"type": "string"},
+        "query_type": {"type": "string"},
+        "company_mentioned": {"type": "boolean"},
+        "company_recommended": {"type": "boolean"},
+        "company_correctly_described": {"type": "boolean"},
+        "company_cited": {"type": "boolean"},
+        "competitors_mentioned": {"type": "array", "items": {"type": "string"}},
+        "position": {"type": ["integer", "null"]},
+        "reason": {"type": "string"},
+        "sources": {"type": "array", "items": {"type": "string"}},
+        "confidence": {"type": "integer", "minimum": 0, "maximum": 100},
+        "observation_mode": {"type": "string"},
+        "status": {"type": "string"}
+      },
+      "additionalProperties": true
+    }
+  }
+}

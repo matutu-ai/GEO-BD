@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Competitor Intelligence",
+  "description": "Competitor candidates and the comparable gap matrix.",
+  "type": "object",
+  "required": ["competitors", "gap_matrix", "status", "basis"],
+  "properties": {
+    "competitors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {
+          "name": {"type": "string"},
+          "status": {"type": "string"},
+          "mention_rate": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+          "recommendation_rate": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+          "evidence_count": {"type": ["integer", "null"], "minimum": 0},
+          "authority_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+          "citation_rate": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+          "dimensions": {"type": "object"},
+          "sources": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    },
+    "gap_matrix": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["dimension", "status"],
+        "properties": {
+          "dimension": {"type": "string"},
+          "client_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+          "competitor_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+          "gap": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+          "status": {"type": "string"},
+          "basis": {"type": "string"}
+        }
+      }
+    },
+    "score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "status": {"type": "string"},
+    "basis": {"type": "string"}
+  },
+  "additionalProperties": true
+}

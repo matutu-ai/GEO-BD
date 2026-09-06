@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Scenario / Keyword Intelligence Block",
+  "description": "Scenario coverage and keyword coverage derived only from real AI test observations.",
+  "type": "object",
+  "required": ["status", "target_scenarios", "scenarios", "covered_types", "basis"],
+  "properties": {
+    "status": {"type": "string"},
+    "scenario_status": {"type": "string"},
+    "keyword_status": {"type": "string"},
+    "target_scenarios": {"type": "object"},
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "label", "target_count", "covered_count"],
+        "properties": {
+          "type": {"type": "string"},
+          "label": {"type": "string"},
+          "target_count": {"type": "integer", "minimum": 0},
+          "covered_count": {"type": "integer", "minimum": 0},
+          "coverage": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+          "status": {"type": "string"}
+        }
+      }
+    },
+    "scenario_coverage": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "keyword_coverage": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "scenario_coverage_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "keyword_coverage_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "covered_types": {"type": "array", "items": {"type": "string"}},
+    "basis": {"type": "string"}
+  }
+}
