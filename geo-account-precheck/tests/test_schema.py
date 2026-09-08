@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from support import ROOT, load_fixture, run_diagnostic, validate_diagnostic
+from support import ROOT, load_fixture, run_diagnostic, validate_against_schema_file, validate_diagnostic
 
 from engine.validation.schema_validator import SchemaValidator
 
@@ -16,6 +16,23 @@ class SchemaValidatorTest(unittest.TestCase):
     def test_diagnostic_report_from_full_sample_matches_schema(self) -> None:
         result = run_diagnostic(load_fixture())
         self.assertEqual(validate_diagnostic(result), [])
+        self.assertEqual(
+            validate_against_schema_file(
+                result["competition_intelligence"],
+                ROOT / "schemas" / "competition-intelligence.schema.json",
+            ),
+            [],
+        )
+
+    def test_competition_intelligence_schema_rejects_invalid_recommendation_score(self) -> None:
+        result = run_diagnostic(load_fixture())
+        scenario = result["competition_intelligence"]["customer_scenarios"][0]
+        scenario["recommendation_score"] = 101
+        errors = validate_against_schema_file(
+            result["competition_intelligence"],
+            ROOT / "schemas" / "competition-intelligence.schema.json",
+        )
+        self.assertTrue(any("expected <= 100" in error for error in errors))
 
     def test_diagnostic_report_from_empty_input_still_matches_schema(self) -> None:
         result = run_diagnostic({})

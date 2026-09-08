@@ -26,6 +26,14 @@ def _run(script: Path, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def validate_report_json(path: Path) -> list[str]:
+    report = json.loads(path.read_text(encoding="utf-8"))
+    sys.path.insert(0, str(ROOT))
+    from engine.validation.schema_validator import validate_against_schema_file
+
+    return validate_against_schema_file(report, ROOT / "schemas" / "report.schema.json")
+
+
 class RunDiagnosticCliTest(unittest.TestCase):
     def test_template_prints_valid_input_json(self) -> None:
         result = _run(RUN_DIAGNOSTIC, "--template")
@@ -55,13 +63,65 @@ class RunDiagnosticCliTest(unittest.TestCase):
             self.assertIn("AI Test:", result.stdout)
             self.assertTrue(md_path.exists())
             self.assertTrue(json_path.exists())
-            self.assertIn("# GEO Diagnostic Report", md_path.read_text(encoding="utf-8"))
+            self.assertIn("# GEO诊断报告", md_path.read_text(encoding="utf-8"))
             report = json.loads(json_path.read_text(encoding="utf-8"))
             for key in ("meta", "entity", "ai_cognition", "query_matrix", "competitors", "evidence_graph", "scores"):
                 self.assertIn(key, report)
             validation = _run(VALIDATE_DIAGNOSTIC, "--input", str(json_path))
             self.assertEqual(validation.returncode, 0, validation.stderr)
             self.assertIn("VALIDATION_OK", validation.stdout)
+
+    def test_report_level_all_writes_three_reports_and_two_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            out_dir = Path(tmp) / "all"
+            result = _run(
+                RUN_DIAGNOSTIC,
+                "--input",
+                str(SAMPLE),
+                "--offline",
+                "--report-level",
+                "all",
+                "--output",
+                str(out_dir),
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            executive = (out_dir / "executive.md").read_text(encoding="utf-8")
+            operational = (out_dir / "operational.md").read_text(encoding="utf-8")
+            technical = (out_dir / "technical.md").read_text(encoding="utf-8")
+            self.assertIn("# GEO诊断报告", executive)
+            self.assertIn("# GEO Operational Report", operational)
+            self.assertIn("# GEO Diagnostic Report", technical)
+            report_path = out_dir / "report.json"
+            diagnostic_path = out_dir / "diagnostic.json"
+            self.assertTrue(report_path.exists())
+            self.assertTrue(diagnostic_path.exists())
+            errors = validate_report_json(report_path)
+            self.assertEqual(errors, [])
+
+    def test_report_level_all_honors_custom_json_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            out_dir = Path(tmp) / "all"
+            custom_diagnostic = Path(tmp) / "custom-diagnostic.json"
+            custom_report = Path(tmp) / "custom-report.json"
+            result = _run(
+                RUN_DIAGNOSTIC,
+                "--input",
+                str(SAMPLE),
+                "--offline",
+                "--report-level",
+                "all",
+                "--output",
+                str(out_dir),
+                "--json",
+                str(custom_diagnostic),
+                "--report-json",
+                str(custom_report),
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(custom_diagnostic.exists())
+            self.assertTrue(custom_report.exists())
+            self.assertFalse((out_dir / "diagnostic.json").exists())
+            self.assertFalse((out_dir / "report.json").exists())
 
     def test_summary_only_prints_console_summary(self) -> None:
         result = _run(RUN_DIAGNOSTIC, "--input", str(SAMPLE), "--summary", "--offline")
@@ -82,7 +142,15 @@ class RunDiagnosticCliTest(unittest.TestCase):
     def test_markdown_flag_writes_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             md_path = Path(tmp) / "by-markdown-flag.md"
-            result = _run(RUN_DIAGNOSTIC, "--input", str(SAMPLE), "--markdown", str(md_path), "--offline")
+            result = _run(
+                RUN_DIAGNOSTIC,
+                "--input",
+                str(SAMPLE),
+                "--legacy-report",
+                "--markdown",
+                str(md_path),
+                "--offline",
+            )
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("GEO Score:", result.stdout)
             self.assertIn("## 19 Unknown / Missing Data", md_path.read_text(encoding="utf-8"))

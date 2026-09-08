@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Operational Report Schema",
+  "description": "L2 report view for GEO teams. It validates the shared ReportModel and requires operational detail fields.",
+  "$ref": "report.schema.json",
+  "required": [
+    "meta",
+    "health",
+    "core_metrics",
+    "ai_cognition",
+    "top_problems",
+    "query_clusters",
+    "competitor_summary",
+    "entity_consistency",
+    "evidence_conflicts",
+    "opportunities",
+    "action_plan",
+    "measurement",
+    "evidence_refs",
+    "confidence"
+  ]
+}

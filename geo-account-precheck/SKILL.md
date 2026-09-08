@@ -3,11 +3,11 @@ name: geo-diagnostic-engine
 description: 执行企业 GEO 全链路诊断，包括企业实体研究、AI 认知分析、Query Matrix、竞品认知、Evidence Graph、EEAAP/EEAT 评分、GEO Gap、Opportunity Score、优化任务和复测；同时保留 GEO/讯灵账户前置背调、画像关键词与 AI 推荐效果排查能力。当用户要求 GEO 诊断、实体/认知/竞品/证据/机会/推荐/复测，或讯灵账户画像自查与效果排查时使用。
 ---
 
-# GEO Diagnostic Engine V2
+# GEO Diagnostic Engine V3
 
-本 Skill 把 GEO-BD 从“前置背调 + 固定规则报告生成器”升级为可运行、可测试、可扩展的 GEO 诊断引擎。它读取企业资料，先把事实结构化，再做 AI 认知、Query、竞品、证据、EEAAP/EEAT、Gap、机会、行动与复测分析，最终输出可解释的诊断报告。
+本 Skill 把 GEO-BD 从“前置背调 + 固定规则报告生成器”升级为可运行、可测试、可扩展的 GEO 诊断引擎。V3 数据流固定为 `DiagnosticPipeline -> DiagnosticResult -> InsightEngine -> ReportModel -> Executive/Operational/Technical Renderer`：底层继续算完整指标，报告层负责决定用户第一屏看到什么。
 
-原有 `generate_precheck.py` 全部能力继续保留，用于 GEO/讯灵账户上线前资料背调和上线后电话/官网/整体场景问题排查。V2 主入口是 `run_diagnostic.py`。
+原有 V2 Engine、Evidence Graph、Query Matrix、AI Observation、Competitor、Scoring、Recommendation 与 `generate_precheck.py` 全部能力继续保留。`run_diagnostic.py` 默认输出 V3 Executive Report，`--legacy-report` 可回退到旧 V2 19 章节 Markdown。
 
 ## 什么时候使用
 
@@ -19,7 +19,7 @@ description: 执行企业 GEO 全链路诊断，包括企业实体研究、AI �
 
 ## 输入
 
-V2 使用自然的客户资料 JSON，至少可以包含：
+V3 继续兼容 V2 输入，使用自然的客户资料 JSON，至少可以包含：
 
 ```json
 {
@@ -60,11 +60,19 @@ V2 使用自然的客户资料 JSON，至少可以包含：
 
 ## 输出
 
-运行后得到 Markdown 报告和 `diagnostic.json`。JSON 顶层结构为：
+运行后得到分层 Markdown、`diagnostic.json` 与可选的 `report.json`。原始 `diagnostic.json` 顶层保留 V2 20 个诊断块：
 
 `meta`、`company`、`entity`、`ai_cognition`、`query_matrix`、`competitors`、`evidence_graph`、`eeaap`、`eeat`、`gaps`、`opportunities`、`recommendations`、`validation`、`scores`、`data_quality`、`scenarios`、`keywords`、`citations`、`nap`、`ai_tests`。
 
-Markdown 固定 19 个章节：
+V3 默认 `executive`：
+
+- L1 `executive`：`# GEO诊断报告`，先给 Health Score 与一句话诊断，再给 Top 3 Problems、Top 3 Opportunities、Action Plan、复测指标与可信度说明。
+- L2 `operational`：`# GEO Operational Report`，给 GEO/内容/增长团队展开 AI、Query Cluster、Competitor、Entity、Evidence、Opportunity 与 Action。
+- L3 `technical`：`# GEO Diagnostic Report`，保留 V2 完整 19 章节原始诊断，给专家/技术人员/Agent。
+
+`report.json` 是共享 ReportModel，顶层字段为 `meta`、`health`、`core_metrics`、`ai_cognition`、`top_problems`、`opportunities`、`action_plan`、`query_clusters`、`competitor_summary`、`entity_consistency`、`evidence_conflicts`、`baseline`、`measurement`、`evidence_refs`、`confidence`。
+
+L3 对应的旧 19 章节仍可用于完整技术视图：
 
 1. Executive Summary
 2. Company Entity
@@ -86,6 +94,8 @@ Markdown 固定 19 个章节：
 18. Data Quality
 19. Unknown / Missing Data
 
+缺失数据处理原则不变：没有真实 AI Observation 时，AI 认知/推荐/引用与竞品 AI 指标必须输出 `UNKNOWN`；没有足够证据时 Evidence Strength 等指标不能假装算出来。`simulated` 观察永不参与评分。
+
 ## 执行流程
 
 1. 读取客户资料并确认已有/缺失内容。
@@ -102,7 +112,8 @@ Markdown 固定 19 个章节：
 12. 生成 P0/P1/P2/P3。
 13. 生成可执行任务和所需资料。
 14. 生成复测计划。
-15. 输出诊断报告。
+15. 用 `InsightEngine` 生成 `ReportModel`。
+16. 按需要渲染 Executive / Operational / Technical 分层报告。
 
 ## 第一原则：严禁虚构
 
@@ -124,15 +135,15 @@ Markdown 固定 19 个章节：
 - 数据质量低时报告必须提示“当前诊断结论可信度有限”。
 - source-doc 里的 20 篇、60-80 篇、7 天、7-15 天、100/200/500 篇等是 Operational Heuristic，不是 Guaranteed Rule。
 
-## 运行 V2
+## 运行 V3
 
 完整使用示例：
 
 ```bash
 python scripts/run_diagnostic.py \
-  --input inputs/diagnostic-template.json \
-  --output reports/diagnostic.md \
-  --json reports/diagnostic.json \
+  --input tests/fixtures/sample_company.json \
+  --output reports/executive.md \
+  --report-json reports/report.json \
   --offline
 ```
 
@@ -148,18 +159,34 @@ python scripts/run_diagnostic.py \
   --summary \
   --offline
 
-# 生成 Markdown 与 JSON 报告
+# 生成 V3 Executive Report 与原始诊断 JSON
 python scripts/run_diagnostic.py \
   --input tests/fixtures/sample_company.json \
-  --output reports/diagnostic.md \
+  --output reports/executive.md \
   --json reports/diagnostic.json \
   --needs-input reports/needs-input.md \
   --offline
 
-# 仅生成 Markdown
+# 三层报告：executive/operational/technical + diagnostic.json + report.json
 python scripts/run_diagnostic.py \
   --input tests/fixtures/sample_company.json \
-  --markdown reports/diagnostic.md \
+  --report-level all \
+  --output /tmp/geo-v3-demo \
+  --needs-input reports/needs-input.md \
+  --offline
+
+# L2 Operational Report
+python scripts/run_diagnostic.py \
+  --input tests/fixtures/sample_company.json \
+  --report-level operational \
+  --output reports/operational.md \
+  --offline
+
+# 旧 V2 19 章节完整 Markdown
+python scripts/run_diagnostic.py \
+  --input tests/fixtures/sample_company.json \
+  --legacy-report \
+  --output reports/diagnostic.md \
   --offline
 
 # 下一轮：保留静态企业资料，清空旧观察/竞品/Evidence/指标
@@ -167,9 +194,10 @@ python scripts/prepare_round.py \
   --from reports/diagnostic.json \
   --out inputs/round2.json
 
-# run_diagnosis.py 是兼容别名
+# run_diagnosis.py 是兼容别名；加 --legacy-report 可恢复旧 V2 Markdown
 python scripts/run_diagnosis.py \
   --input tests/fixtures/sample_company.json \
+  --legacy-report \
   --output reports/diagnostic.md \
   --json reports/diagnostic.json \
   --offline
@@ -197,9 +225,11 @@ python scripts/validate_diagnostic.py \
 
 参数说明：
 
-- `--output`：写 Markdown 报告。
-- `--markdown`：写 Markdown 报告（与 `--output` 二选一即可）。
-- `--json`：写结构化 `diagnostic.json`。
+- `--report-level {executive,operational,technical,all}`：默认 `executive`；`all` 时一次生成三层 Markdown 与两份 JSON。
+- `--output` / `--markdown`：写 Markdown；单层时是文件路径，`all` 时是目录。
+- `--json PATH`：写原始 `diagnostic.json`（V2 20 块 `DiagnosticResult`）。
+- `--report-json PATH`：写 V3 `report.json`（InsightEngine 生成的 `ReportModel`）。
+- `--legacy-report`：强制输出旧 V2 19 章节 Markdown。
 - `--check`：资料不足时返回非零退出码。
 - `--template`：输出输入模板。
 - `--offline`：不联网运行，缺失内容保持 `UNKNOWN`。

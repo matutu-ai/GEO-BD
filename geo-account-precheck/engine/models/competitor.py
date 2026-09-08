@@ -19,6 +19,9 @@ class Competitor:
     citation_rate: int | None = None
     dimensions: dict[str, int | None] = field(default_factory=dict)
     sources: list[str] = field(default_factory=list)
+    pool: str = ""
+    relationship: str = ""
+    competition_context: str = ""
 
     @classmethod
     def from_dict(cls, data: Any) -> "Competitor":
@@ -36,6 +39,9 @@ class Competitor:
             citation_rate=_int_or_none(data.get("citation_rate")),
             dimensions={str(k): _int_or_none(v) for k, v in (data.get("dimensions") or {}).items()},
             sources=list(data.get("sources") or []),
+            pool=str(data.get("pool") or "").strip(),
+            relationship=str(data.get("relationship") or "").strip(),
+            competition_context=str(data.get("competition_context") or "").strip(),
         )
 
 

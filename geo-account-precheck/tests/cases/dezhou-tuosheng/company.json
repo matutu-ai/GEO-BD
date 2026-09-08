@@ -1,0 +1,89 @@
+{
+  "company": {
+    "name": "德州拓晟通风设备有限公司",
+    "aliases": ["德州拓晟"],
+    "brands": ["拓晟"],
+    "business": "人防通风设备与工程配套",
+    "industry": ["人防工程", "通风设备制造", "机电安装"],
+    "products": ["人防通风设备", "密闭阀", "油网滤尘器", "过滤吸收器", "人防门"],
+    "services": ["通风系统集成", "安装调试", "工程配套供货", "OEM加工"],
+    "customers": ["人防工程总包", "建筑设计院", "房地产开发商"],
+    "cases": ["2025年完成河南某地下人防工程通风系统设备供货与安装项目"],
+    "locations": ["德州", "山东", "河南"],
+    "certificates": ["建筑机电安装工程专业承包资质"]
+  },
+  "materials": ["官网", "资质证书复印件", "河南项目合同", "产品检测报告"],
+  "queries": [
+    {"query": "人防通风设备厂家", "intent": "采购/选型"},
+    {"query": "人防密闭阀厂家", "intent": "采购/选型"},
+    {"query": "油网滤尘器厂家", "intent": "采购/选型"},
+    {"query": "过滤吸收器厂家", "intent": "采购/选型"},
+    {"query": "人防通风系统集成", "intent": "系统集成采购"},
+    {"query": "河南人防通风项目", "intent": "区域项目采购"},
+    {"query": "人防门定点生产厂家", "intent": "采购/选型"},
+    {"query": "需要完整人防门定点资质", "intent": "采购/选型"},
+    {"query": "需要厂家独立出具人防门完整验收资料", "intent": "项目采购"}
+  ],
+  "current_metrics": {},
+  "constraints": {
+    "offline": true,
+    "data_policy": "offline mode must keep unknown values UNKNOWN"
+  },
+  "evidence": [
+    {
+      "id": "D001",
+      "claim": "向河南某地下人防工程供应并安装人防通风设备、密闭阀、油网滤尘器与过滤吸收器，项目已交付",
+      "entity": "德州拓晟通风设备有限公司",
+      "source": "河南项目供货与安装合同",
+      "source_type": "user_provided",
+      "verified": false,
+      "status": "FACT",
+      "category": "experience"
+    },
+    {
+      "id": "D002",
+      "claim": "产品目录包含密闭阀系列与油网滤尘器系列，型号参数见产品样本",
+      "entity": "德州拓晟通风设备有限公司",
+      "source": "产品样本",
+      "source_type": "official",
+      "verified": false,
+      "status": "FACT"
+    },
+    {
+      "id": "D003",
+      "claim": "过滤吸收器通过出厂检验，检验项目包括气密性与滤毒效率",
+      "entity": "德州拓晟通风设备有限公司",
+      "source": "出厂检验记录",
+      "source_type": "official",
+      "verified": false,
+      "status": "FACT"
+    },
+    {
+      "id": "D004",
+      "claim": "公司介绍中描述人防门产品及工程应用方向，属产品宣传介绍，不代表其已取得人防门定点生产资质",
+      "entity": "德州拓晟通风设备有限公司",
+      "source": "企业介绍",
+      "source_type": "official",
+      "verified": false,
+      "status": "FACT"
+    },
+    {
+      "id": "D005",
+      "claim": "持有建筑机电安装工程专业承包资质证书复印件，原件待主管部门核验",
+      "entity": "德州拓晟通风设备有限公司",
+      "source": "资质证书复印件",
+      "source_type": "user_provided",
+      "verified": false,
+      "status": "FACT"
+    },
+    {
+      "id": "D006",
+      "claim": "以上案例与资料均为虚拟回归测试样本，不代表真实经营数据",
+      "entity": "德州拓晟通风设备有限公司",
+      "source": "测试样本声明",
+      "source_type": "official",
+      "verified": true,
+      "status": "FACT"
+    }
+  ]
+}

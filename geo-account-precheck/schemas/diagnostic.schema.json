@@ -314,6 +314,9 @@
           }
         }
       }
+    },
+    "competition_intelligence": {
+      "$ref": "competition-intelligence.schema.json"
     }
   },
   "additionalProperties": false

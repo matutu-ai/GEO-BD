@@ -1,0 +1,286 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GEO Competition Intelligence Schema",
+  "description": "Enterprise background check and conditional AI recommendation block produced by the V3 enterprise intelligence engine.",
+  "type": "object",
+  "required": [
+    "company_intelligence",
+    "capabilities",
+    "qualification_boundary",
+    "evidence_review",
+    "competitor_pools",
+    "customer_scenarios",
+    "recommendation_decisions",
+    "query_summary",
+    "positioning",
+    "promotion_strategy",
+    "geo_content_gaps",
+    "claim_safety",
+    "recommendation_status",
+    "basis"
+  ],
+  "properties": {
+    "company_intelligence": {
+      "type": "object",
+      "properties": {
+        "company_name": {"type": "string"},
+        "legal_name": {"type": "string"},
+        "location": {"type": "string"},
+        "founded_year": {"type": ["string", "integer", "number", "null"]},
+        "registered_capital": {"type": ["string", "integer", "number", "null"]},
+        "industry": {"type": "array", "items": {"type": "string"}},
+        "business_model": {"type": "array", "items": {"type": "string"}},
+        "primary_business": {"type": "array", "items": {"type": "string"}},
+        "secondary_business": {"type": "array", "items": {"type": "string"}},
+        "products": {"type": "array", "items": {"type": "string"}},
+        "services": {"type": "array", "items": {"type": "string"}},
+        "target_customers": {"type": "array", "items": {"type": "string"}},
+        "target_regions": {"type": "array", "items": {"type": "string"}},
+        "application_scenarios": {"type": "array", "items": {"type": "string"}},
+        "manufacturing_capabilities": {"type": "array", "items": {"type": "string"}},
+        "technology_capabilities": {"type": "array", "items": {"type": "string"}},
+        "project_experience": {"type": "array", "items": {"type": "string"}},
+        "brand_attributes": {"type": "array", "items": {"type": "string"}},
+        "known_constraints": {"type": "array", "items": {"type": "string"}},
+        "unknown_items": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["capability", "type", "level", "evidence", "confidence"],
+        "properties": {
+          "capability": {"type": "string"},
+          "type": {
+            "type": "string",
+            "enum": [
+              "PRODUCT",
+              "MANUFACTURING",
+              "TECHNICAL",
+              "SYSTEM_INTEGRATION",
+              "PROJECT",
+              "SERVICE",
+              "REGIONAL",
+              "OEM",
+              "CUSTOMIZATION",
+              "DELIVERY"
+            ]
+          },
+          "level": {"type": "integer", "minimum": 0, "maximum": 100},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "confidence": {"type": "integer", "minimum": 0, "maximum": 100},
+          "regions": {"type": "array", "items": {"type": "string"}},
+          "scenarios": {"type": "array", "items": {"type": "string"}},
+          "limitations": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "qualification_boundary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item", "type", "status", "evidence", "risk_level"],
+        "properties": {
+          "item": {"type": "string"},
+          "type": {"type": "string", "enum": ["qualification", "business", "product", "service", "regulatory"]},
+          "status": {"type": "string", "enum": ["verified", "unverified", "absent", "partner_required", "unknown"]},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "risk_level": {"type": "string", "enum": ["low", "medium", "high"]},
+          "allowed_claims": {"type": "array", "items": {"type": "string"}},
+          "forbidden_claims": {"type": "array", "items": {"type": "string"}},
+          "recommended_disclosure": {"type": "string"}
+        }
+      }
+    },
+    "evidence_review": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claim", "source_type", "tier", "verification_status", "supports", "contradicts"],
+        "properties": {
+          "id": {"type": "string"},
+          "claim": {"type": "string"},
+          "source": {"type": "string"},
+          "source_type": {"type": "string"},
+          "tier": {"type": "integer", "minimum": 1, "maximum": 5},
+          "date": {"type": "string"},
+          "region": {"type": "string"},
+          "evidence_strength": {"type": "integer", "minimum": 0, "maximum": 100},
+          "verification_status": {"type": "string"},
+          "supports": {"type": "array", "items": {"type": "string"}},
+          "contradicts": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "competitor_pools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["pool", "relationship", "members"],
+        "properties": {
+          "pool": {"type": "string"},
+          "relationship": {"type": "string", "enum": ["direct_competitor", "indirect_competitor", "scenario_competitor", "not_competitor"]},
+          "members": {"type": "array", "items": {"type": "string"}},
+          "basis": {"type": "string"},
+          "client_advantage": {"type": "array", "items": {"type": "string"}},
+          "client_disadvantage": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "customer_scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["scenario", "recommendation_score", "recommended", "reason"],
+        "properties": {
+          "scenario": {"type": "string"},
+          "customer_type": {"type": "string"},
+          "need": {"type": "string"},
+          "product_match": {"type": "integer", "minimum": 0, "maximum": 100},
+          "capability_match": {"type": "integer", "minimum": 0, "maximum": 100},
+          "qualification_match": {"type": "integer", "minimum": 0, "maximum": 100},
+          "regional_match": {"type": "integer", "minimum": 0, "maximum": 100},
+          "evidence_strength": {"type": "integer", "minimum": 0, "maximum": 100},
+          "recommendation_score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "recommended": {"type": "boolean"},
+          "reason": {"type": "string"},
+          "limitations": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "recommendation_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["query", "recommendation", "score", "reason"],
+        "properties": {
+          "query": {"type": "string"},
+          "intent": {"type": "string"},
+          "match": {"type": "string"},
+          "recommendation": {"type": "string"},
+          "score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "reason": {"type": "string"},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "product_match": {"type": "integer", "minimum": 0, "maximum": 100},
+          "capability_match": {"type": "integer", "minimum": 0, "maximum": 100},
+          "qualification_match": {"type": "integer", "minimum": 0, "maximum": 100},
+          "regional_match": {"type": "integer", "minimum": 0, "maximum": 100},
+          "evidence_strength": {"type": "integer", "minimum": 0, "maximum": 100}
+        }
+      }
+    },
+    "query_summary": {
+      "type": "object",
+      "properties": {
+        "recommended": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "query": {"type": "string"},
+              "intent": {"type": "string"},
+              "recommendation": {"type": "string"},
+              "score": {"type": "integer", "minimum": 0, "maximum": 100},
+              "reason": {"type": "string"}
+            }
+          }
+        },
+        "conditional": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "query": {"type": "string"},
+              "intent": {"type": "string"},
+              "recommendation": {"type": "string"},
+              "score": {"type": "integer", "minimum": 0, "maximum": 100},
+              "reason": {"type": "string"}
+            }
+          }
+        },
+        "not_recommended": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "query": {"type": "string"},
+              "intent": {"type": "string"},
+              "recommendation": {"type": "string"},
+              "score": {"type": "integer", "minimum": 0, "maximum": 100},
+              "reason": {"type": "string"}
+            }
+          }
+        },
+        "recommendation_labels": {"type": "object"}
+      }
+    },
+    "positioning": {
+      "type": "object",
+      "properties": {
+        "primary_positioning": {"type": "string"},
+        "secondary_positioning": {"type": "array", "items": {"type": "string"}},
+        "core_tags": {"type": "array", "items": {"type": "string"}},
+        "regional_tags": {"type": "array", "items": {"type": "string"}},
+        "product_authority": {"type": "array", "items": {"type": "string"}},
+        "service_authority": {"type": "array", "items": {"type": "string"}},
+        "recommended_customer_types": {"type": "array", "items": {"type": "string"}},
+        "recommended_scenarios": {"type": "array", "items": {"type": "string"}},
+        "restricted_scenarios": {"type": "array", "items": {"type": "string"}},
+        "competitive_position": {"type": "string"},
+        "one_sentence_positioning": {"type": "string"}
+      }
+    },
+    "promotion_strategy": {
+      "type": "object",
+      "properties": {
+        "promote": {"type": "array", "items": {"type": "string"}},
+        "avoid": {"type": "array", "items": {"type": "string"}},
+        "priorities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "priority": {"type": "string"},
+              "direction": {"type": "string"},
+              "action": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "geo_content_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gap_type": {"type": "string"},
+          "severity": {"type": "string", "enum": ["critical", "high", "medium", "low"]},
+          "reason": {"type": "string"},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "suggestion": {"type": "string"}
+        }
+      }
+    },
+    "claim_safety": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim", "status"],
+        "properties": {
+          "claim": {"type": "string"},
+          "status": {
+            "type": "string",
+            "enum": ["FACT", "INFERENCE", "MARKETING_CLAIM", "UNVERIFIED", "CONFLICT", "UNKNOWN"]
+          },
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "reason": {"type": "string"},
+          "recommendation": {"type": "string"}
+        }
+      }
+    },
+    "recommendation_status": {"type": "string"},
+    "basis": {"type": "string"}
+  },
+  "additionalProperties": false
+}

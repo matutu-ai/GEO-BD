@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GEO Diagnostic Engine V2 command-line entry point."""
+"""GEO Diagnostic Engine V3 command-line entry point."""
 
 from __future__ import annotations
 
@@ -14,7 +14,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine.pipeline import DiagnosticPipeline  # noqa: E402
-from engine.reports.generator import render_markdown  # noqa: E402
+from engine.reporting import (  # noqa: E402
+    REPORT_LEVELS,
+    build_report_model,
+    generate_report,
+    render_legacy_report,
+)
 from engine.validation.schema_validator import validate_against_schema_file  # noqa: E402
 
 
@@ -34,6 +39,27 @@ def _load_input(path: Path) -> dict[str, Any]:
 def _write(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+
+
+def _json_text(data: Any) -> str:
+    return json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+
+
+def _write_all_reports(
+    directory: Path,
+    diagnostic: dict[str, Any],
+    model: Any,
+    *,
+    diagnostic_json_path: Path,
+    report_json_path: Path,
+) -> None:
+    """Write executive/operational/technical markdown plus both JSON artifacts."""
+    directory.mkdir(parents=True, exist_ok=True)
+    _write(directory / "executive.md", generate_report(diagnostic, "executive", model))
+    _write(directory / "operational.md", generate_report(diagnostic, "operational", model))
+    _write(directory / "technical.md", generate_report(diagnostic, "technical", model))
+    _write(diagnostic_json_path, _json_text(diagnostic))
+    _write(report_json_path, _json_text(model.to_dict()))
 
 
 def _validate_report(path: Path, schema_path: Path | None = None) -> list[str]:
@@ -149,7 +175,11 @@ def _needs_input_markdown(diagnostic: dict[str, Any]) -> str:
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, help="Path to a natural GEO diagnostic input JSON.")
-    parser.add_argument("--output", type=Path, help="Path to write the Markdown diagnostic report.")
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Path for one Markdown report, or a directory when --report-level all is used.",
+    )
     parser.add_argument(
         "--json",
         nargs="?",
@@ -159,12 +189,31 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Write diagnostic JSON; an optional PATH defaults to reports/diagnostic.json.",
     )
     parser.add_argument(
+        "--report-json",
+        nargs="?",
+        const=ROOT / "reports" / "report.json",
+        type=Path,
+        metavar="PATH",
+        help="Write the V3 ReportModel JSON; an optional PATH defaults to reports/report.json.",
+    )
+    parser.add_argument(
         "--markdown",
         nargs="?",
         const=ROOT / "reports" / "diagnostic.md",
         type=Path,
         metavar="PATH",
-        help="Write Markdown; an optional PATH defaults to reports/diagnostic.md.",
+        help="Write Markdown; an optional PATH defaults to reports/diagnostic.md. With --report-level all, PATH is a directory.",
+    )
+    parser.add_argument(
+        "--report-level",
+        choices=REPORT_LEVELS,
+        default="executive",
+        help="V3 report level: executive (default), operational, technical, or all.",
+    )
+    parser.add_argument(
+        "--legacy-report",
+        action="store_true",
+        help="Keep the old V2 19-chapter diagnostic Markdown instead of the V3 default report.",
     )
     parser.add_argument("--check", action="store_true", help="Exit non-zero when input data is insufficient.")
     parser.add_argument("--template", action="store_true", help="Print the input JSON template.")
@@ -220,15 +269,40 @@ def main(argv: list[str] | None = None) -> int:
 
     data = _load_input(args.input)
     diagnostic = DiagnosticPipeline(offline=args.offline or args.research_mode == "offline", research_mode=args.research_mode).run(data)
-    markdown = render_markdown(diagnostic)
-
+    model = build_report_model(diagnostic)
+    level = args.report_level
+    write_all = level == "all" and not args.legacy_report
+    if args.legacy_report:
+        markdown = render_legacy_report(diagnostic)
+    elif level == "all":
+        markdown = ""
+    else:
+        markdown = generate_report(diagnostic, level, model)
     output_path = args.output or args.markdown
-    writes_files = output_path is not None or args.json is not None or args.needs_input is not None
-    if output_path is not None:
-        _write(output_path, markdown)
 
-    if args.json is not None:
-        _write(args.json, json.dumps(diagnostic, ensure_ascii=False, indent=2) + "\n")
+    if write_all:
+        all_dir = output_path or ROOT / "reports"
+        json_path = args.json if args.json is not None else all_dir / "diagnostic.json"
+        report_json_path = args.report_json if args.report_json is not None else all_dir / "report.json"
+        writes_files = not args.summary or output_path is not None or args.json is not None or args.report_json is not None or args.needs_input is not None
+        if writes_files:
+            _write_all_reports(
+                all_dir,
+                diagnostic,
+                model,
+                diagnostic_json_path=json_path,
+                report_json_path=report_json_path,
+            )
+    else:
+        json_path = args.json
+        report_json_path = args.report_json
+        writes_files = output_path is not None or json_path is not None or report_json_path is not None or args.needs_input is not None
+        if output_path is not None:
+            _write(output_path, markdown)
+        if json_path is not None:
+            _write(json_path, _json_text(diagnostic))
+        if report_json_path is not None:
+            _write(report_json_path, _json_text(model.to_dict()))
 
     if args.needs_input is not None:
         _write(args.needs_input, _needs_input_markdown(diagnostic))

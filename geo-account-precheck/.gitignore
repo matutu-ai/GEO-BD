@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+
+# Local generated diagnostics and client work products, not repository content.
+inputs/round2.json
+reports/*.json
+reports/*.md

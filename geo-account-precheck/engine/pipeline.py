@@ -16,6 +16,7 @@ from .eeat.scorer import EeatScorer
 from .entity.researcher import EntityResearcher
 from .evidence.graph import build_evidence_graph
 from .evidence.verifier import EvidenceVerifier
+from .enterprise_intelligence import build_competition_intelligence
 from .gap.analyzer import analyze_gaps
 from .models.company import CompanyProfile
 from .models.competitor import Competitor
@@ -229,6 +230,7 @@ class DiagnosticPipeline:
             nap=nap,
             ai_tests=ai_tests,
         )
+        result.competition_intelligence = build_competition_intelligence(result.to_dict())
         return result.to_dict()
 
     def _validation(self, company: CompanyProfile, recommendations: dict[str, Any]) -> dict[str, Any]:

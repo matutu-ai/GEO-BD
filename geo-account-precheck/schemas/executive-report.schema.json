@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Executive Report Schema",
+  "description": "Decision-first L1 report view. It validates the shared ReportModel and requires the fields ExecutiveRenderer consumes.",
+  "$ref": "report.schema.json",
+  "required": [
+    "meta",
+    "health",
+    "core_metrics",
+    "ai_cognition",
+    "top_problems",
+    "opportunities",
+    "action_plan",
+    "baseline",
+    "measurement",
+    "evidence_conflicts",
+    "evidence_refs",
+    "confidence"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Technical Report Schema",
+  "description": "L3 report view for GEO experts and agents. Technical markdown keeps the raw V2 diagnostic blocks; this schema validates the full structured ReportModel plus traceability.",
+  "$ref": "report.schema.json",
+  "required": [
+    "meta",
+    "health",
+    "core_metrics",
+    "ai_cognition",
+    "top_problems",
+    "opportunities",
+    "action_plan",
+    "query_clusters",
+    "competitor_summary",
+    "entity_consistency",
+    "evidence_conflicts",
+    "baseline",
+    "measurement",
+    "evidence_refs",
+    "confidence"
+  ]
+}
