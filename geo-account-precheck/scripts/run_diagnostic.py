@@ -21,6 +21,7 @@ from engine.reporting import (  # noqa: E402
     render_legacy_report,
 )
 from engine.validation.schema_validator import validate_against_schema_file  # noqa: E402
+from agents.final_summary_agent import render_final_summary  # noqa: E402
 
 
 def render_input_template() -> str:
@@ -58,6 +59,7 @@ def _write_all_reports(
     _write(directory / "executive.md", generate_report(diagnostic, "executive", model))
     _write(directory / "operational.md", generate_report(diagnostic, "operational", model))
     _write(directory / "technical.md", generate_report(diagnostic, "technical", model))
+    _write(directory / "geo_summary.md", render_final_summary(diagnostic.get("final_summary") or {}))
     _write(diagnostic_json_path, _json_text(diagnostic))
     _write(report_json_path, _json_text(model.to_dict()))
 
@@ -232,6 +234,12 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Write a checklist of missing data to PATH.",
     )
     parser.add_argument(
+        "--final-summary",
+        type=Path,
+        metavar="PATH",
+        help="Write the operations-focused GEO customer summary to PATH.",
+    )
+    parser.add_argument(
         "--validate",
         type=Path,
         metavar="REPORT_JSON",
@@ -284,7 +292,7 @@ def main(argv: list[str] | None = None) -> int:
         all_dir = output_path or ROOT / "reports"
         json_path = args.json if args.json is not None else all_dir / "diagnostic.json"
         report_json_path = args.report_json if args.report_json is not None else all_dir / "report.json"
-        writes_files = not args.summary or output_path is not None or args.json is not None or args.report_json is not None or args.needs_input is not None
+        writes_files = not args.summary or output_path is not None or args.json is not None or args.report_json is not None or args.needs_input is not None or args.final_summary is not None
         if writes_files:
             _write_all_reports(
                 all_dir,
@@ -296,13 +304,16 @@ def main(argv: list[str] | None = None) -> int:
     else:
         json_path = args.json
         report_json_path = args.report_json
-        writes_files = output_path is not None or json_path is not None or report_json_path is not None or args.needs_input is not None
+        writes_files = output_path is not None or json_path is not None or report_json_path is not None or args.needs_input is not None or args.final_summary is not None
         if output_path is not None:
             _write(output_path, markdown)
         if json_path is not None:
             _write(json_path, _json_text(diagnostic))
         if report_json_path is not None:
             _write(report_json_path, _json_text(model.to_dict()))
+
+    if args.final_summary is not None:
+        _write(args.final_summary, render_final_summary(diagnostic.get("final_summary") or {}))
 
     if args.needs_input is not None:
         _write(args.needs_input, _needs_input_markdown(diagnostic))

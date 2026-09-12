@@ -1,0 +1,18 @@
+{
+  "certification": {
+    "人防门防护设备定点证书": {"status": false}
+  },
+  "business_position": {
+    "end_product_factory": false,
+    "correct_position": [
+      "人防通风系统供应商",
+      "人防工程通风设备制造企业",
+      "人防门构件 OEM 合作厂"
+    ]
+  },
+  "forbidden_positioning": [
+    "人防门厂家",
+    "国家人防门定点企业",
+    "人防防护设备生产企业"
+  ]
+}

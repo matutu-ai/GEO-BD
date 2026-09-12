@@ -1,0 +1,4 @@
+interface:
+  display_name: "GEO-BD Diagnostic Skill"
+  short_description: "企业 GEO 优化前诊断、背调与优化路线"
+  default_prompt: "使用 $geo-bd-diagnostic-skill 对这家企业做 GEO 优化前诊断，并输出九部分诊断报告。"

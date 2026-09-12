@@ -9,6 +9,7 @@ from .generator import (
 )
 from .insight_engine import InsightEngine
 from .models import ReportModel
+from .diagnostic_skill import build_diagnostic_skill_report, render_diagnostic_skill_report
 
 __all__ = [
     "REPORT_LEVELS",
@@ -18,4 +19,6 @@ __all__ = [
     "generate_report",
     "generate_reports",
     "render_legacy_report",
+    "build_diagnostic_skill_report",
+    "render_diagnostic_skill_report",
 ]

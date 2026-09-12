@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GEO-BD Diagnostic Skill V1 Output",
+  "type": "object",
+  "required": ["schema_version", "report_type", "company_status", "ai_cognition", "query_coverage", "evidence_trust", "competitor_gap", "geo_score", "geo_gaps", "priority_actions", "next_phase"],
+  "properties": {
+    "schema_version": {"type": "string", "enum": ["1.0"]},
+    "report_type": {"type": "string"},
+    "company_status": {
+      "type": "object",
+      "required": ["company_name", "industry", "location", "business_model", "position", "products", "services", "target_customer", "status", "missing"],
+      "properties": {
+        "company_name": {"type": "string"},
+        "industry": {"type": "array", "items": {"type": "string"}},
+        "location": {"type": "array", "items": {"type": "string"}},
+        "business_model": {"type": "string"},
+        "position": {"type": "string"},
+        "products": {"type": "array", "items": {"type": "string"}},
+        "services": {"type": "array", "items": {"type": "string"}},
+        "target_customer": {"type": "array", "items": {"type": "string"}},
+        "status": {"type": "string"},
+        "missing": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "ai_cognition": {
+      "type": "object",
+      "required": ["brand_recognition", "business_understanding", "recommend_probability", "accuracy_score", "status", "observation_count", "platforms", "basis"],
+      "properties": {
+        "brand_recognition": {"type": ["integer", "number", "null"], "minimum": 0, "maximum": 100},
+        "business_understanding": {"type": ["integer", "number", "null"], "minimum": 0, "maximum": 100},
+        "recommend_probability": {"type": ["integer", "number", "null"], "minimum": 0, "maximum": 100},
+        "accuracy_score": {"type": ["integer", "number", "null"], "minimum": 0, "maximum": 100},
+        "status": {"type": "string"},
+        "observation_count": {"type": "integer", "minimum": 0},
+        "platforms": {"type": "array", "items": {"type": "string"}},
+        "basis": {"type": "string"}
+      }
+    },
+    "query_coverage": {
+      "type": "object",
+      "required": ["status", "score", "total", "observed", "by_type", "basis"],
+      "properties": {
+        "status": {"type": "string"},
+        "score": {"type": ["integer", "number", "null"], "minimum": 0, "maximum": 100},
+        "total": {"type": "integer", "minimum": 0},
+        "observed": {"type": "integer", "minimum": 0},
+        "by_type": {"type": "array", "items": {"$ref": "#/$defs/query_type"}},
+        "basis": {"type": "string"}
+      }
+    },
+    "evidence_trust": {
+      "type": "object",
+      "required": ["status", "score", "count", "verified_count", "third_party_count", "gaps", "basis"],
+      "properties": {
+        "status": {"type": "string"},
+        "score": {"type": ["integer", "number", "null"], "minimum": 0, "maximum": 100},
+        "count": {"type": "integer", "minimum": 0},
+        "verified_count": {"type": "integer", "minimum": 0},
+        "third_party_count": {"type": "integer", "minimum": 0},
+        "gaps": {"type": "array", "items": {"type": "string"}},
+        "basis": {"type": ["string", "object"]}
+      }
+    },
+    "competitor_gap": {
+      "type": "object",
+      "required": ["status", "score", "count", "top_gaps", "basis"],
+      "properties": {
+        "status": {"type": "string"},
+        "score": {"type": ["integer", "number", "null"], "minimum": 0, "maximum": 100},
+        "count": {"type": "integer", "minimum": 0},
+        "top_gaps": {"type": "array", "items": {"type": "string"}},
+        "basis": {"type": "string"}
+      }
+    },
+    "geo_score": {
+      "type": "object",
+      "required": ["total", "status", "scale", "basis", "categories", "available_categories", "missing_categories"],
+      "properties": {
+        "total": {"type": ["integer", "number", "null"], "minimum": 0, "maximum": 100},
+        "status": {"type": "string"},
+        "scale": {"type": "integer", "enum": [100]},
+        "basis": {"type": "string"},
+        "categories": {"type": "object", "additionalProperties": {"$ref": "#/$defs/score"}},
+        "available_categories": {"type": "array", "items": {"type": "string"}},
+        "missing_categories": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "geo_gaps": {"type": "array", "items": {"type": "object"}},
+    "priority_actions": {"type": "array", "items": {"type": "object"}},
+    "next_phase": {
+      "type": "object",
+      "required": ["name", "handoff", "steps", "validation"],
+      "properties": {
+        "name": {"type": "string"},
+        "handoff": {"type": "string"},
+        "steps": {"type": "array", "items": {"type": "string"}},
+        "validation": {"type": "object"}
+      }
+    }
+  },
+  "$defs": {
+    "query_type": {
+      "type": "object",
+      "required": ["type", "target_count", "observed_count", "status"],
+      "properties": {
+        "type": {"type": "string"},
+        "target_count": {"type": "integer", "minimum": 0},
+        "observed_count": {"type": "integer", "minimum": 0},
+        "status": {"type": "string"}
+      }
+    },
+    "score": {
+      "type": "object",
+      "required": ["value", "label", "status", "basis"],
+      "properties": {
+        "value": {"type": ["integer", "number", "null"], "minimum": 0, "maximum": 100},
+        "label": {"type": "string"},
+        "status": {"type": "string"},
+        "basis": {"type": "string"}
+      }
+    }
+  }
+}

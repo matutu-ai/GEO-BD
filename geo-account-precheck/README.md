@@ -6,6 +6,15 @@ GEO-BD 是一套结构化 GEO Diagnostic Engine。V3 保留 V2 的底层诊断�
 
 它不是普通的企业资料分析：普通分析只总结“客户有什么”，GEO-BD 还会回答“AI 知道什么、推荐谁、为什么缺席、缺哪类证据、下一轮怎么复测”。没有真实数据时，输出必须是 `UNKNOWN` / `NOT_RUN` / `INSUFFICIENT_DATA`，禁止用推测或模拟结果冒充真实检测。
 
+> 给 AI / 新维护者的最短路径：先读 `SKILL.md` 掌握使用时机，再读上一级
+> `LEARN.md` 的模块地图，按顺序只读目标文件；完整 CLI 参数见本文档
+> “CLI” 一节，读报告方法见 `examples/02-answer-sheet.md`。
+
+面向客户 GEO 优化前诊断的独立 Skill 入口在上一级
+`skills/geo-bd-diagnostic-skill/SKILL.md`，本目录提供它复用的 Pipeline、Schema、
+测试与兼容 CLI。Golden Case 001 的 V1 入口为
+`scripts/run_geo_bd_diagnostic.py`。
+
 ## 为什么需要 Engine
 
 - 企业事实必须区分 `FACT / INFERENCE / UNKNOWN`，每条事实尽量带来源。
@@ -117,6 +126,8 @@ V3 默认不再把 20 个数据块一次全部堆给用户。CLI 提供三层 Ma
 - L3 `technical`：标题 `# GEO Diagnostic Report`，保留 V2 完整 19 章节原始诊断，面向专家、技术人员与 Agent。
 
 `report.json` 是共享的 V3 `ReportModel` JSON，顶层包含 `meta`、`health`、`core_metrics`、`ai_cognition`、`top_problems`、`opportunities`、`action_plan`、`query_clusters`、`competitor_summary`、`entity_consistency`、`evidence_conflicts`、`baseline`、`measurement`、`evidence_refs`、`confidence`。
+
+`final_summary` 是挂在 `diagnostic.json` 上的运营决策总结，只读取已有诊断结果，不重新生成关键词或事实。使用 `--report-level all` 时会额外写出 `geo_summary.md`，包含客户阶段、AI 认知、企业实体、Query 缺口、核心问题和 P0/P1/P2 方向；未知内容标记为 `【需客户补充真实资料】`。
 
 没有真实 AI Observation 时，AI 认知/推荐/引用、AI Share of Voice 与竞品 AI 差距保持 `UNKNOWN`，不估算数字；只有企业基础资料时仍生成 Executive Report，但会明确提示“当前只能进行基础实体诊断，无法进行完整 AI 表现判断”。
 
@@ -248,6 +259,7 @@ python3 scripts/validate_diagnostic.py \
 - `--legacy-report`：强制使用旧 V2 19 章节 Markdown。
 - `--summary`：只打印一屏摘要。
 - `--needs-input PATH`：额外写出待补资料清单。
+- `--final-summary PATH`：额外写出客户 GEO 情况总结 Markdown；`--report-level all` 默认写入输出目录的 `geo_summary.md`。
 - `--check`：数据不足时返回非零退出码。
 - `--offline`：不联网且不虚构研究结果。
 - `--research-mode`：支持 `manual/provided/external/offline`。

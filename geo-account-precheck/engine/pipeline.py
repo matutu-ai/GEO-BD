@@ -35,6 +35,7 @@ from .summary import (
 )
 from .summary.intelligence import normalize_observation
 from .validation.evaluator import ValidationEvaluator
+from agents.final_summary_agent import FinalSummaryAgent
 
 
 def build_evidence_items(data: dict[str, Any]) -> list[EvidenceItem]:
@@ -195,6 +196,8 @@ class DiagnosticPipeline:
             nap=nap,
         )
 
+        input_constraints = dict(data.get("constraints") or {})
+        input_constraints.update(data.get("fact_constraints") or {})
         result = DiagnosticResult(
             meta={
                 "engine": "GEO Diagnostic Engine",
@@ -203,6 +206,7 @@ class DiagnosticPipeline:
                 "offline": self.offline,
                 "research_mode": self.research_mode,
                 "diagnostic_note": "Score is a diagnostic indicator, not a ranking guarantee.",
+                "fact_constraints": input_constraints,
             },
             company=provisional["company"],
             entity=entity.to_dict(),
@@ -231,6 +235,7 @@ class DiagnosticPipeline:
             ai_tests=ai_tests,
         )
         result.competition_intelligence = build_competition_intelligence(result.to_dict())
+        result.final_summary = FinalSummaryAgent().build(result.to_dict())
         return result.to_dict()
 
     def _validation(self, company: CompanyProfile, recommendations: dict[str, Any]) -> dict[str, Any]:

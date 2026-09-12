@@ -31,6 +31,7 @@ class DiagnosticResult:
     nap: dict[str, Any] = field(default_factory=dict)
     ai_tests: dict[str, Any] = field(default_factory=dict)
     competition_intelligence: dict[str, Any] = field(default_factory=dict)
+    final_summary: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return to_dict(self)

@@ -1,0 +1,203 @@
+{
+  "company": {
+    "name": "德州拓晟通风设备有限公司",
+    "aliases": ["德州拓晟", "拓晟通风"],
+    "brands": ["拓晟"],
+    "business": "人防通风系统供应与工程配套服务",
+    "industry": ["人防工程通风设备", "工业通风系统", "防护设备供应链"],
+    "products": ["人防密闭阀", "油网滤尘器", "过滤吸收器", "人防风管", "通风设备配件"],
+    "services": ["通风系统配套", "安装调试", "工程项目供货", "OEM合作"],
+    "customers": ["人防工程总包", "建筑设计院", "工程施工单位"],
+    "cases": ["河南某地下人防工程通风系统设备供货与安装项目"],
+    "locations": ["德州", "武城", "鲁权屯", "山东", "河南"],
+    "certificates": ["建筑机电安装工程专业承包资质"],
+    "website": "https://example-tuosheng.invalid",
+    "contacts": "待补充",
+    "address": "山东德州武城鲁权屯",
+    "experts": [],
+    "media": []
+  },
+  "materials": [
+    "input/company_profile.md",
+    "input/products.md",
+    "input/qualification.md",
+    "input/cases.md",
+    "input/website_snapshot.md"
+  ],
+  "fact_constraints": {
+    "certification": {"人防门防护设备定点证书": {"status": false}},
+    "business_position": {"end_product_factory": false}
+  },
+  "queries": [
+    {"query": "德州拓晟通风设备有限公司是做什么的？", "intent": "informational"},
+    {"query": "武城鲁权屯人防通风设备厂家", "intent": "local"},
+    {"query": "人防密闭阀厂家", "intent": "commercial"},
+    {"query": "人防通风系统解决方案", "intent": "scenario"},
+    {"query": "人防通风设备供应商", "intent": "commercial"},
+    {"query": "人防工程验收资料怎么准备", "intent": "informational"},
+    {"query": "密闭阀选型指南", "intent": "decision"},
+    {"query": "人防门厂家有哪些", "intent": "commercial"}
+  ],
+  "ai_observations": [
+    {
+      "query": "德州拓晟通风设备有限公司是做什么的？",
+      "query_type": "informational",
+      "company_mentioned": true,
+      "company_recommended": false,
+      "company_correctly_described": true,
+      "company_cited": false,
+      "reason": "识别为山东德州武城鲁权屯地区的人防通风设备企业。",
+      "sources": ["mock://ai/001"],
+      "confidence": 80,
+      "observation_mode": "observed",
+      "status": "observed"
+    },
+    {
+      "query": "武城鲁权屯人防通风设备厂家",
+      "query_type": "local",
+      "company_mentioned": true,
+      "company_recommended": true,
+      "company_correctly_described": true,
+      "company_cited": false,
+      "reason": "匹配企业、产品和地域。",
+      "sources": ["mock://ai/002"],
+      "confidence": 75,
+      "observation_mode": "observed",
+      "status": "observed"
+    },
+    {
+      "query": "人防密闭阀厂家",
+      "query_type": "commercial",
+      "company_mentioned": true,
+      "company_recommended": true,
+      "company_correctly_described": true,
+      "company_cited": true,
+      "reason": "企业产品与采购需求匹配。",
+      "sources": ["mock://ai/003"],
+      "confidence": 75,
+      "observation_mode": "observed",
+      "status": "observed"
+    },
+    {
+      "query": "人防通风系统解决方案",
+      "query_type": "scenario",
+      "company_mentioned": false,
+      "company_recommended": false,
+      "company_correctly_described": false,
+      "company_cited": false,
+      "reason": "当前官网缺少系统解决方案页面。",
+      "sources": ["mock://ai/004"],
+      "confidence": 70,
+      "observation_mode": "observed",
+      "status": "observed"
+    },
+    {
+      "query": "人防工程验收资料怎么准备",
+      "query_type": "informational",
+      "company_mentioned": false,
+      "company_recommended": false,
+      "company_correctly_described": false,
+      "company_cited": false,
+      "reason": "当前缺少可公开引用的验收资料。",
+      "sources": ["mock://ai/005"],
+      "confidence": 70,
+      "observation_mode": "observed",
+      "status": "observed"
+    },
+    {
+      "query": "人防门厂家有哪些",
+      "query_type": "commercial",
+      "company_mentioned": false,
+      "company_recommended": false,
+      "company_correctly_described": false,
+      "company_cited": false,
+      "reason": "企业不是人防门终端制造企业，当前不强制推荐。",
+      "sources": ["mock://ai/006"],
+      "confidence": 90,
+      "observation_mode": "observed",
+      "status": "observed"
+    }
+  ],
+  "competitors": [
+    {
+      "name": "A企业",
+      "status": "confirmed",
+      "mention_rate": 70,
+      "recommendation_rate": 65,
+      "evidence_count": 12,
+      "authority_score": 75,
+      "citation_rate": 60,
+      "sources": ["mock://competitor/a"]
+    },
+    {
+      "name": "B企业",
+      "status": "confirmed",
+      "mention_rate": 65,
+      "recommendation_rate": 60,
+      "evidence_count": 10,
+      "authority_score": 70,
+      "citation_rate": 55,
+      "sources": ["mock://competitor/b"]
+    }
+  ],
+  "issues": [
+    "缺少人防通风系统解决方案",
+    "缺少人防工程验收资料",
+    "缺少密闭阀选型指南"
+  ],
+  "evidence": [
+    {
+      "id": "G001",
+      "claim": "企业生产销售人防密闭阀、油网滤尘器、过滤吸收器和人防风管",
+      "entity": "德州拓晟通风设备有限公司",
+      "source": "产品目录",
+      "source_type": "official",
+      "date": "2025-06-01",
+      "confidence": 70,
+      "verified": false,
+      "status": "FACT",
+      "category": "evidence"
+    },
+    {
+      "id": "G002",
+      "claim": "完成河南某地下人防工程通风系统设备供货与安装项目",
+      "entity": "德州拓晟通风设备有限公司",
+      "source": "项目资料",
+      "source_type": "user_provided",
+      "date": "2025-09-01",
+      "confidence": 65,
+      "verified": false,
+      "status": "FACT",
+      "category": "experience"
+    },
+    {
+      "id": "G003",
+      "claim": "持有建筑机电安装工程专业承包资质复印件，原件待主管部门核验",
+      "entity": "德州拓晟通风设备有限公司",
+      "source": "资质资料",
+      "source_type": "user_provided",
+      "date": "2025-05-01",
+      "confidence": 60,
+      "verified": false,
+      "status": "FACT",
+      "category": "authoritativeness"
+    },
+    {
+      "id": "G004",
+      "claim": "人防门相关业务仅为 OEM 合作边界，不代表已取得人防门防护设备定点生产证书，也不是人防门终端制造企业",
+      "entity": "德州拓晟通风设备有限公司",
+      "source": "资质与事实边界资料",
+      "source_type": "user_provided",
+      "date": "2025-05-01",
+      "confidence": 90,
+      "verified": false,
+      "status": "FACT",
+      "category": "perspective"
+    }
+  ],
+  "constraints": {
+    "offline": true,
+    "data_policy": "missing facts remain UNKNOWN",
+    "do_not_claim": ["人防门厂家", "国家人防门定点企业", "人防防护设备生产企业"]
+  }
+}

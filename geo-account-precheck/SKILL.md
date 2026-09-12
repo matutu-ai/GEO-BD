@@ -5,6 +5,13 @@ description: 执行企业 GEO 全链路诊断，包括企业实体研究、AI �
 
 # GEO Diagnostic Engine V3
 
+> 学习顺序：先读本文件掌握“什么时候用、执行流程、严禁虚构”，再读 `README.md`
+> 掌握输入输出与 CLI；需要了解代码模块时读上一级 `LEARN.md` 的文件地图，不要一次
+> 加载全部 engine/schemas/tests。最快验证命令：
+> `python3 scripts/run_diagnostic.py --input tests/fixtures/sample_company.json --summary --offline`
+
+面向优化前诊断的独立 Skill 入口是上一级 `skills/geo-bd-diagnostic-skill/SKILL.md`；Golden Test Case 001 位于 `tests/cases/case_001_tuoshi_ventilation/`。
+
 本 Skill 把 GEO-BD 从“前置背调 + 固定规则报告生成器”升级为可运行、可测试、可扩展的 GEO 诊断引擎。V3 数据流固定为 `DiagnosticPipeline -> DiagnosticResult -> InsightEngine -> ReportModel -> Executive/Operational/Technical Renderer`：底层继续算完整指标，报告层负责决定用户第一屏看到什么。
 
 原有 V2 Engine、Evidence Graph、Query Matrix、AI Observation、Competitor、Scoring、Recommendation 与 `generate_precheck.py` 全部能力继续保留。`run_diagnostic.py` 默认输出 V3 Executive Report，`--legacy-report` 可回退到旧 V2 19 章节 Markdown。
@@ -71,6 +78,8 @@ V3 默认 `executive`：
 - L3 `technical`：`# GEO Diagnostic Report`，保留 V2 完整 19 章节原始诊断，给专家/技术人员/Agent。
 
 `report.json` 是共享 ReportModel，顶层字段为 `meta`、`health`、`core_metrics`、`ai_cognition`、`top_problems`、`opportunities`、`action_plan`、`query_clusters`、`competitor_summary`、`entity_consistency`、`evidence_conflicts`、`baseline`、`measurement`、`evidence_refs`、`confidence`。
+
+诊断结果同时包含 `final_summary`。它是只读归纳层，不重新分析或生成事实；`--report-level all` 会输出运营人员可直接阅读的 `geo_summary.md`。未知内容使用 `【需客户补充真实资料】`，受限业务不得被总结成企业定位。
 
 L3 对应的旧 19 章节仍可用于完整技术视图：
 
@@ -237,6 +246,7 @@ python scripts/validate_diagnostic.py \
 - `--validate`：校验已有报告 JSON。
 - `--summary`：只打印一屏 `GEO Score / Top / Evidence / Missing / AI Test`。
 - `--needs-input`：把待补资料写成 Markdown 清单。
+- `--final-summary PATH`：额外写出客户 GEO 情况总结；`all` 模式默认生成 `geo_summary.md`。
 
 写文件命令默认在终端给出一屏摘要，完整报告见输出文件；`--summary` 可在不写文件时复用
 同一屏摘要。新用户先读 `examples/00-quickstart.md`。

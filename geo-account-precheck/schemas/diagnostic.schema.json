@@ -317,6 +317,9 @@
     },
     "competition_intelligence": {
       "$ref": "competition-intelligence.schema.json"
+    },
+    "final_summary": {
+      "$ref": "final_summary_schema.json"
     }
   },
   "additionalProperties": false

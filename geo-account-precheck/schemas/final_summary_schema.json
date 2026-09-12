@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GEO Final Customer Summary",
+  "description": "Operations summary derived only from an existing GEO diagnostic result.",
+  "type": "object",
+  "required": [
+    "company_name",
+    "company_position",
+    "geo_stage",
+    "ai_cognition_summary",
+    "entity_status",
+    "keyword_status",
+    "user_intent_analysis",
+    "competition_analysis",
+    "core_problem",
+    "optimization_priority",
+    "operation_direction",
+    "final_conclusion"
+  ],
+  "properties": {
+    "company_name": {"type": "string"},
+    "company_position": {"type": "string"},
+    "geo_stage": {"type": "string"},
+    "entity_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "ai_cognition_summary": {"type": "string"},
+    "entity_status": {
+      "type": "object",
+      "required": ["strength", "weakness"],
+      "properties": {"strength": {"type": "string"}, "weakness": {"type": "string"}},
+      "additionalProperties": false
+    },
+    "keyword_status": {
+      "type": "object",
+      "required": ["covered", "missing"],
+      "properties": {"covered": {"type": "string"}, "missing": {"type": "string"}},
+      "additionalProperties": false
+    },
+    "user_intent_analysis": {"type": "string"},
+    "competition_analysis": {"type": "string"},
+    "core_problem": {"type": "string"},
+    "optimization_priority": {
+      "type": "object",
+      "required": ["P0", "P1", "P2"],
+      "properties": {
+        "P0": {"type": "array", "items": {"type": "string"}},
+        "P1": {"type": "array", "items": {"type": "string"}},
+        "P2": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "operation_direction": {"type": "string"},
+    "final_conclusion": {"type": "string"}
+  },
+  "additionalProperties": false
+}
