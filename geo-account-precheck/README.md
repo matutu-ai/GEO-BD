@@ -134,6 +134,8 @@ V3 默认不再把 20 个数据块一次全部堆给用户。CLI 提供三层 Ma
 
 `ai_learning_pack.md` / `ai_learning_pack.json` 是给豆包、千问等下游 AI 的 Skill 导出包，严格复用 `skills/geo-bd-diagnostic-skill/references/diagnostic-output.schema.json`、`diagnostic_skill.py` 和九段报告模板，不新增平行业务字段。该 V1 摘要比完整 `diagnostic.json` 更适合首次学习和重复投喂。
 
+`interaction/` 是独立的用户引导层，按节点提供欢迎、资料采集、定位、竞争、AI 可见性、画像、处方和报告提示。它不改变诊断数据，只把当前已知结果渲染成简短的阶段提示；可用 `interaction.render_prompt(stage, context)` 调用。
+
 没有真实 AI Observation 时，AI 认知/推荐/引用、AI Share of Voice 与竞品 AI 差距保持 `UNKNOWN`，不估算数字；只有企业基础资料时仍生成 Executive Report，但会明确提示“当前只能进行基础实体诊断，无法进行完整 AI 表现判断”。
 
 ## GEO Score

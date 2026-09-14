@@ -62,6 +62,12 @@ Client Materials
 
 对运营人员，先给出四项结论：当前 AI 阶段、最大问题、P0/P1 任务、下一次复测条件。完整九部分报告保留用于溯源，不以冗长叙述替代结构化字段。
 
+## 交互提示层
+
+`geo-account-precheck/interaction/` 提供按诊断节点调用的用户提示：`welcome`、`intake`、`diagnosis`、`competition`、`visibility`、`personas`、`prescription`、`report`。通过 `interaction.render_prompt(stage, context)` 渲染；未提供的动态字段统一显示 `【需企业补充真实资料】`。
+
+交互层只解释当前节点、展示已知结果和引导下一步，不重新分析、不虚构排名，也不越过 GEO-BD 与 GEO 执行层的边界。
+
 先把客户材料整理为 `geo-account-precheck/inputs/diagnostic-template.json` 兼容的 JSON，再运行：
 
 ```bash
