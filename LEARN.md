@@ -52,6 +52,7 @@ geo-account-precheck/engine/
     executive_renderer.py      L1（默认）
     operational_renderer.py    L2
     technical_renderer.py      L3（复用旧 19 章节）
+  learning_pack.py             严格复用 Diagnostic Skill V1 的下游 AI 导出
   reports/generator.py         旧 V2 render_markdown() 兼容层，新代码不依赖它
 
 geo-account-precheck/schemas/                    每个数据块一份 JSON Schema

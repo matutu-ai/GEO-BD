@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GEO AI Diagnosis Summary",
+  "type": "object",
+  "required": ["company_position", "public_information_status", "ai_cognition_status", "core_problems", "current_stage"],
+  "properties": {
+    "company_position": {"type": "string"},
+    "public_information_status": {"type": "string"},
+    "ai_cognition_status": {"type": "string"},
+    "core_problems": {"type": "array", "items": {"type": "string"}},
+    "current_stage": {"type": "string"}
+  },
+  "additionalProperties": false
+}

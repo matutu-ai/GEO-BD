@@ -35,7 +35,10 @@ from .summary import (
 )
 from .summary.intelligence import normalize_observation
 from .validation.evaluator import ValidationEvaluator
+from agents.diagnosis_agent import DiagnosisAgent
 from agents.final_summary_agent import FinalSummaryAgent
+from agents.optimization_task_agent import OptimizationTaskAgent
+from agents.prescription_agent import PrescriptionAgent
 
 
 def build_evidence_items(data: dict[str, Any]) -> list[EvidenceItem]:
@@ -235,6 +238,9 @@ class DiagnosticPipeline:
             ai_tests=ai_tests,
         )
         result.competition_intelligence = build_competition_intelligence(result.to_dict())
+        result.optimization_tasks = OptimizationTaskAgent().build(result.to_dict())
+        result.diagnosis_summary = DiagnosisAgent().build(result.to_dict())
+        result.geo_prescription = PrescriptionAgent().build(result.diagnosis_summary)
         result.final_summary = FinalSummaryAgent().build(result.to_dict())
         return result.to_dict()
 

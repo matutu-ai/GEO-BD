@@ -36,6 +36,7 @@ def build_diagnostic_skill_report(diagnostic: dict[str, Any]) -> dict[str, Any]:
     competitors = diagnostic.get("competitors") or {}
     gaps = diagnostic.get("gaps") or {}
     recommendations = diagnostic.get("recommendations") or {}
+    optimization_tasks = diagnostic.get("optimization_tasks") or {}
 
     categories = {
         "entity": _score(scores.get("entity_score"), "Entity 完整度", basis.get("entity_score")),
@@ -73,7 +74,7 @@ def build_diagnostic_skill_report(diagnostic: dict[str, Any]) -> dict[str, Any]:
             "missing_categories": [key for key, item in categories.items() if item["value"] is None],
         },
         "geo_gaps": list(gaps.get("gaps") or []) + _issue_gaps(company),
-        "priority_actions": list(recommendations.get("actions") or []),
+        "priority_actions": _priority_actions(optimization_tasks, recommendations),
         "next_phase": {
             "name": "GEO Strategy",
             "handoff": "诊断完成后进入关键词、信源、内容与发布策略设计。",
@@ -188,6 +189,26 @@ def render_diagnostic_skill_report(report: dict[str, Any]) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def _priority_actions(
+    optimization_tasks: dict[str, Any], recommendations: dict[str, Any]
+) -> list[dict[str, Any]]:
+    """Prefer the module handoff while keeping legacy diagnostics readable."""
+
+    tasks = optimization_tasks.get("tasks") or []
+    if tasks:
+        return [
+            {
+                "priority": task.get("priority"),
+                "task": task.get("title"),
+                "goal": task.get("goal"),
+                "output": task.get("output"),
+                "basis": task.get("basis") or [],
+            }
+            for task in tasks
+        ]
+    return list(recommendations.get("actions") or [])
 
 
 def _company_status(company: dict[str, Any], entity: dict[str, Any]) -> dict[str, Any]:

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GEO Optimization Task Recommendation",
+  "description": "Module-level AI cognition improvement tasks derived from an existing diagnostic.",
+  "type": "object",
+  "required": ["title", "module", "diagnosis", "tasks", "next_step", "boundary"],
+  "properties": {
+    "title": {"type": "string"},
+    "module": {"type": "string", "enum": ["AI认知提升任务"]},
+    "diagnosis": {"type": "string"},
+    "tasks": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["id", "priority", "title", "goal", "needs", "output", "basis"],
+        "properties": {
+          "id": {"type": "string"},
+          "priority": {"type": "string", "enum": ["P0", "P1", "P2", "P3"]},
+          "title": {"type": "string"},
+          "goal": {"type": "string"},
+          "needs": {"type": "array", "items": {"type": "string"}},
+          "output": {"type": "string"},
+          "basis": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "next_step": {
+      "type": "object",
+      "required": ["title", "handoff"],
+      "properties": {"title": {"type": "string"}, "handoff": {"type": "string"}},
+      "additionalProperties": false
+    },
+    "boundary": {"type": "string"}
+  },
+  "additionalProperties": false
+}

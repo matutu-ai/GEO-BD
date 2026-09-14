@@ -320,6 +320,15 @@
     },
     "final_summary": {
       "$ref": "final_summary_schema.json"
+    },
+    "optimization_tasks": {
+      "$ref": "optimization_task_schema.json"
+    },
+    "diagnosis_summary": {
+      "$ref": "diagnosis_summary_schema.json"
+    },
+    "geo_prescription": {
+      "$ref": "geo_prescription_schema.json"
     }
   },
   "additionalProperties": false

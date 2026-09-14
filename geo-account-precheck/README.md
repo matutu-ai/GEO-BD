@@ -37,6 +37,7 @@ GEO-BD 是一套结构化 GEO Diagnostic Engine。V3 保留 V2 的底层诊断�
   -> GEO Gap -> Opportunity -> P0/P1/P2/P3 Action Plan
   -> Validation Plan -> 真实复测 -> Before/After Comparison
   -> DiagnosticResult
+  -> DiagnosisAgent -> PrescriptionAgent
   -> InsightEngine
   -> ReportModel
   -> Executive / Operational / Technical Renderer
@@ -128,6 +129,10 @@ V3 默认不再把 20 个数据块一次全部堆给用户。CLI 提供三层 Ma
 `report.json` 是共享的 V3 `ReportModel` JSON，顶层包含 `meta`、`health`、`core_metrics`、`ai_cognition`、`top_problems`、`opportunities`、`action_plan`、`query_clusters`、`competitor_summary`、`entity_consistency`、`evidence_conflicts`、`baseline`、`measurement`、`evidence_refs`、`confidence`。
 
 `final_summary` 是挂在 `diagnostic.json` 上的运营决策总结，只读取已有诊断结果，不重新生成关键词或事实。使用 `--report-level all` 时会额外写出 `geo_summary.md`，包含客户阶段、AI 认知、企业实体、Query 缺口、核心问题和 P0/P1/P2 方向；未知内容标记为 `【需客户补充真实资料】`。
+
+`diagnosis_summary` 与 `geo_prescription` 是独立的运营交接层：前者只总结企业定位、公开信息状态、AI 认知、核心问题和当前阶段；后者只输出 P1/P2 能力模块处方，不生成关键词、画像或内容执行项。`--report-level all` 会额外生成 `ai_diagnosis_summary.md/json`、`geo_prescription.md/json` 和组合版 `final_report.md`。
+
+`ai_learning_pack.md` / `ai_learning_pack.json` 是给豆包、千问等下游 AI 的 Skill 导出包，严格复用 `skills/geo-bd-diagnostic-skill/references/diagnostic-output.schema.json`、`diagnostic_skill.py` 和九段报告模板，不新增平行业务字段。该 V1 摘要比完整 `diagnostic.json` 更适合首次学习和重复投喂。
 
 没有真实 AI Observation 时，AI 认知/推荐/引用、AI Share of Voice 与竞品 AI 差距保持 `UNKNOWN`，不估算数字；只有企业基础资料时仍生成 Executive Report，但会明确提示“当前只能进行基础实体诊断，无法进行完整 AI 表现判断”。
 
@@ -260,6 +265,10 @@ python3 scripts/validate_diagnostic.py \
 - `--summary`：只打印一屏摘要。
 - `--needs-input PATH`：额外写出待补资料清单。
 - `--final-summary PATH`：额外写出客户 GEO 情况总结 Markdown；`--report-level all` 默认写入输出目录的 `geo_summary.md`。
+- `--learning-pack PATH`：写出可直接投喂下游 AI 的紧凑 Markdown 学习包。
+- `--learning-pack-json PATH`：写出结构化学习包 JSON；`--report-level all` 默认同时生成 Markdown 和 JSON。
+- `--ai-diagnosis-summary PATH` / `--ai-diagnosis-summary-json PATH`：额外写出 AI 诊断总结 Markdown/JSON。
+- `--geo-prescription PATH` / `--geo-prescription-json PATH`：额外写出 GEO 优化处方 Markdown/JSON。
 - `--check`：数据不足时返回非零退出码。
 - `--offline`：不联网且不虚构研究结果。
 - `--research-mode`：支持 `manual/provided/external/offline`。

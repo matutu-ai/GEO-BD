@@ -22,6 +22,10 @@ from engine.reporting import (  # noqa: E402
 )
 from engine.validation.schema_validator import validate_against_schema_file  # noqa: E402
 from agents.final_summary_agent import render_final_summary  # noqa: E402
+from agents.optimization_task_agent import render_optimization_tasks  # noqa: E402
+from agents.diagnosis_agent import render_diagnosis_summary  # noqa: E402
+from agents.prescription_agent import render_geo_prescription  # noqa: E402
+from engine.learning_pack import build_ai_learning_pack, render_ai_learning_pack  # noqa: E402
 
 
 def render_input_template() -> str:
@@ -46,6 +50,46 @@ def _json_text(data: Any) -> str:
     return json.dumps(data, ensure_ascii=False, indent=2) + "\n"
 
 
+def _render_final_handoff(diagnostic: dict[str, Any]) -> str:
+    """Render a compact diagnosis-to-prescription execution handoff."""
+
+    company = diagnostic.get("company") or {}
+    company_name = str(company.get("name") or "【需客户补充真实资料】")
+    diagnosis = diagnostic.get("diagnosis_summary") or {}
+    prescription = diagnostic.get("geo_prescription") or {}
+    problems = diagnosis.get("core_problems") or ["【需客户补充真实资料】"]
+    lines = [
+        "# GEO-BD诊断与优化处方",
+        "",
+        f"企业：{company_name}",
+        f"阶段：{diagnosis.get('current_stage') or '【需客户补充真实资料】'}",
+        "",
+        "## AI诊断总结",
+        "",
+        f"定位：{diagnosis.get('company_position') or '【需客户补充真实资料】'}",
+        f"公开信息：{diagnosis.get('public_information_status') or '【需客户补充真实资料】'}",
+        f"AI认知：{diagnosis.get('ai_cognition_status') or '【需客户补充真实资料】'}",
+        "核心问题：",
+        *[f"- {item}" for item in problems],
+        "",
+        "## GEO优化处方",
+        "",
+    ]
+    for item in prescription.get("prescriptions") or []:
+        lines.append(
+            f"- {item.get('priority', 'UNKNOWN')} {item.get('title') or '【需客户补充真实资料】'}："
+            f"{item.get('goal') or '【需客户补充真实资料】'}"
+        )
+    lines.extend(
+        [
+            "",
+            f"下一步：{prescription.get('next_step') or '进入 GEO 优化执行流程。'}",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def _write_all_reports(
     directory: Path,
     diagnostic: dict[str, Any],
@@ -60,6 +104,16 @@ def _write_all_reports(
     _write(directory / "operational.md", generate_report(diagnostic, "operational", model))
     _write(directory / "technical.md", generate_report(diagnostic, "technical", model))
     _write(directory / "geo_summary.md", render_final_summary(diagnostic.get("final_summary") or {}))
+    _write(directory / "optimization_tasks.md", render_optimization_tasks(diagnostic.get("optimization_tasks") or {}) + "\n")
+    _write(directory / "optimization_tasks.json", _json_text(diagnostic.get("optimization_tasks") or {}))
+    _write(directory / "ai_diagnosis_summary.md", render_diagnosis_summary(diagnostic.get("diagnosis_summary") or {}) + "\n")
+    _write(directory / "ai_diagnosis_summary.json", _json_text(diagnostic.get("diagnosis_summary") or {}))
+    _write(directory / "geo_prescription.md", render_geo_prescription(diagnostic.get("geo_prescription") or {}) + "\n")
+    _write(directory / "geo_prescription.json", _json_text(diagnostic.get("geo_prescription") or {}))
+    _write(directory / "final_report.md", _render_final_handoff(diagnostic) + "\n")
+    learning_pack = build_ai_learning_pack(diagnostic)
+    _write(directory / "ai_learning_pack.md", render_ai_learning_pack(learning_pack) + "\n")
+    _write(directory / "ai_learning_pack.json", _json_text(learning_pack))
     _write(diagnostic_json_path, _json_text(diagnostic))
     _write(report_json_path, _json_text(model.to_dict()))
 
@@ -98,8 +152,12 @@ def _console_summary(diagnostic: dict[str, Any]) -> str:
     evidence_score = scores.get("evidence_score")
     evidence_label = "UNKNOWN" if evidence_score is None else f"{evidence_score}/100"
 
+    optimization_tasks = (diagnostic.get("optimization_tasks") or {}).get("tasks") or []
     actions = (diagnostic.get("recommendations") or {}).get("actions") or []
-    if actions:
+    if optimization_tasks:
+        top = optimization_tasks[0]
+        top_label = f"Top {top.get('priority')}: {top.get('title')}"
+    elif actions:
         top = actions[0]
         top_label = f"Top {top.get('priority')}: {top.get('task')}"
     else:
@@ -240,6 +298,54 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Write the operations-focused GEO customer summary to PATH.",
     )
     parser.add_argument(
+        "--learning-pack",
+        type=Path,
+        metavar="PATH",
+        help="Write a compact Markdown context pack for Doubao/Qianwen and other AI platforms.",
+    )
+    parser.add_argument(
+        "--learning-pack-json",
+        type=Path,
+        metavar="PATH",
+        help="Write the structured compact AI learning pack JSON.",
+    )
+    parser.add_argument(
+        "--optimization-tasks",
+        type=Path,
+        metavar="PATH",
+        help="Write module-level AI cognition improvement tasks as Markdown.",
+    )
+    parser.add_argument(
+        "--optimization-tasks-json",
+        type=Path,
+        metavar="PATH",
+        help="Write module-level AI cognition improvement tasks as JSON.",
+    )
+    parser.add_argument(
+        "--ai-diagnosis-summary",
+        type=Path,
+        metavar="PATH",
+        help="Write the compact AI diagnosis summary as Markdown.",
+    )
+    parser.add_argument(
+        "--ai-diagnosis-summary-json",
+        type=Path,
+        metavar="PATH",
+        help="Write the compact AI diagnosis summary as JSON.",
+    )
+    parser.add_argument(
+        "--geo-prescription",
+        type=Path,
+        metavar="PATH",
+        help="Write the module-level GEO optimization prescription as Markdown.",
+    )
+    parser.add_argument(
+        "--geo-prescription-json",
+        type=Path,
+        metavar="PATH",
+        help="Write the module-level GEO optimization prescription as JSON.",
+    )
+    parser.add_argument(
         "--validate",
         type=Path,
         metavar="REPORT_JSON",
@@ -292,7 +398,7 @@ def main(argv: list[str] | None = None) -> int:
         all_dir = output_path or ROOT / "reports"
         json_path = args.json if args.json is not None else all_dir / "diagnostic.json"
         report_json_path = args.report_json if args.report_json is not None else all_dir / "report.json"
-        writes_files = not args.summary or output_path is not None or args.json is not None or args.report_json is not None or args.needs_input is not None or args.final_summary is not None
+        writes_files = not args.summary or output_path is not None or args.json is not None or args.report_json is not None or args.needs_input is not None or args.final_summary is not None or args.learning_pack is not None or args.learning_pack_json is not None or args.optimization_tasks is not None or args.optimization_tasks_json is not None or args.ai_diagnosis_summary is not None or args.ai_diagnosis_summary_json is not None or args.geo_prescription is not None or args.geo_prescription_json is not None
         if writes_files:
             _write_all_reports(
                 all_dir,
@@ -304,7 +410,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         json_path = args.json
         report_json_path = args.report_json
-        writes_files = output_path is not None or json_path is not None or report_json_path is not None or args.needs_input is not None or args.final_summary is not None
+        writes_files = output_path is not None or json_path is not None or report_json_path is not None or args.needs_input is not None or args.final_summary is not None or args.learning_pack is not None or args.learning_pack_json is not None or args.optimization_tasks is not None or args.optimization_tasks_json is not None or args.ai_diagnosis_summary is not None or args.ai_diagnosis_summary_json is not None or args.geo_prescription is not None or args.geo_prescription_json is not None
         if output_path is not None:
             _write(output_path, markdown)
         if json_path is not None:
@@ -314,6 +420,34 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.final_summary is not None:
         _write(args.final_summary, render_final_summary(diagnostic.get("final_summary") or {}))
+
+    if args.learning_pack is not None or args.learning_pack_json is not None:
+        learning_pack = build_ai_learning_pack(diagnostic)
+        if args.learning_pack is not None:
+            _write(args.learning_pack, render_ai_learning_pack(learning_pack) + "\n")
+        if args.learning_pack_json is not None:
+            _write(args.learning_pack_json, _json_text(learning_pack))
+
+    if args.optimization_tasks is not None or args.optimization_tasks_json is not None:
+        tasks = diagnostic.get("optimization_tasks") or {}
+        if args.optimization_tasks is not None:
+            _write(args.optimization_tasks, render_optimization_tasks(tasks) + "\n")
+        if args.optimization_tasks_json is not None:
+            _write(args.optimization_tasks_json, _json_text(tasks))
+
+    if args.ai_diagnosis_summary is not None or args.ai_diagnosis_summary_json is not None:
+        diagnosis_summary = diagnostic.get("diagnosis_summary") or {}
+        if args.ai_diagnosis_summary is not None:
+            _write(args.ai_diagnosis_summary, render_diagnosis_summary(diagnosis_summary) + "\n")
+        if args.ai_diagnosis_summary_json is not None:
+            _write(args.ai_diagnosis_summary_json, _json_text(diagnosis_summary))
+
+    if args.geo_prescription is not None or args.geo_prescription_json is not None:
+        prescription = diagnostic.get("geo_prescription") or {}
+        if args.geo_prescription is not None:
+            _write(args.geo_prescription, render_geo_prescription(prescription) + "\n")
+        if args.geo_prescription_json is not None:
+            _write(args.geo_prescription_json, _json_text(prescription))
 
     if args.needs_input is not None:
         _write(args.needs_input, _needs_input_markdown(diagnostic))

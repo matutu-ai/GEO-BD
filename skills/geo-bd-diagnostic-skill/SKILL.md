@@ -22,6 +22,8 @@ Client Materials
   -> GEO Diagnostic Report
 ```
 
+诊断报告之后的运营交接由 `DiagnosisAgent -> PrescriptionAgent` 完成：输出企业当前 AI 认知总结和能力模块处方，不进入 GEO 执行层，不生成关键词、画像、内容标题或发布排期。
+
 先把客户材料整理为 `geo-account-precheck/inputs/diagnostic-template.json` 兼容的 JSON，再运行：
 
 ```bash

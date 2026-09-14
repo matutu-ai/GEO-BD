@@ -32,6 +32,9 @@ class DiagnosticResult:
     ai_tests: dict[str, Any] = field(default_factory=dict)
     competition_intelligence: dict[str, Any] = field(default_factory=dict)
     final_summary: dict[str, Any] = field(default_factory=dict)
+    optimization_tasks: dict[str, Any] = field(default_factory=dict)
+    diagnosis_summary: dict[str, Any] = field(default_factory=dict)
+    geo_prescription: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return to_dict(self)

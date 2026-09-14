@@ -81,6 +81,10 @@ V3 默认 `executive`：
 
 诊断结果同时包含 `final_summary`。它是只读归纳层，不重新分析或生成事实；`--report-level all` 会输出运营人员可直接阅读的 `geo_summary.md`。未知内容使用 `【需客户补充真实资料】`，受限业务不得被总结成企业定位。
 
+诊断完成后还会经过 `DiagnosisAgent -> PrescriptionAgent`：`ai_diagnosis_summary` 只输出企业 AI 现状，`geo_prescription` 只输出定位、信息资产、专业能力和信任体系四类能力处方。两者不生成关键词、画像、内容标题或发布排期；这些执行内容属于后续 GEO。
+
+同一命令还会在 `all` 模式生成 `ai_learning_pack.md` 与 `ai_learning_pack.json`。两者严格等同于本 Skill 的 V1 摘要导出：复用 `diagnostic_skill.py`、九段报告模板和 V1 Schema，不建立另一套业务字段；相较完整 `diagnostic.json`，它适合作为豆包、千问等平台的首次学习上下文。
+
 L3 对应的旧 19 章节仍可用于完整技术视图：
 
 1. Executive Summary
@@ -247,6 +251,10 @@ python scripts/validate_diagnostic.py \
 - `--summary`：只打印一屏 `GEO Score / Top / Evidence / Missing / AI Test`。
 - `--needs-input`：把待补资料写成 Markdown 清单。
 - `--final-summary PATH`：额外写出客户 GEO 情况总结；`all` 模式默认生成 `geo_summary.md`。
+- `--learning-pack PATH`：写出下游 AI 可直接学习的紧凑 Markdown 上下文。
+- `--learning-pack-json PATH`：写出结构化学习包 JSON；`all` 模式默认同时生成两种格式。
+- `--ai-diagnosis-summary PATH` / `--ai-diagnosis-summary-json PATH`：写出 AI 诊断总结 Markdown/JSON。
+- `--geo-prescription PATH` / `--geo-prescription-json PATH`：写出 GEO 优化处方 Markdown/JSON。
 
 写文件命令默认在终端给出一屏摘要，完整报告见输出文件；`--summary` 可在不写文件时复用
 同一屏摘要。新用户先读 `examples/00-quickstart.md`。

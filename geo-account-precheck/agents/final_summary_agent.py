@@ -303,8 +303,16 @@ def _core_problem(diagnostic: dict[str, Any], observations: list[dict[str, Any]]
 
 
 def _priorities(diagnostic: dict[str, Any]) -> dict[str, list[str]]:
+    task_result = diagnostic.get("optimization_tasks") or {}
+    tasks = task_result.get("tasks") or []
     actions = (diagnostic.get("recommendations") or {}).get("actions") or []
     result = {"P0": [], "P1": [], "P2": []}
+    if tasks:
+        for task in tasks:
+            priority = str(task.get("priority") or "")
+            if priority in result and task.get("title"):
+                result[priority].append(str(task["title"]))
+        return result
     for action in actions:
         priority = str(action.get("priority") or "")
         if priority in result and action.get("task"):
