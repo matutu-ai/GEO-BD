@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GEO Growth Prescription",
+  "type": "object",
+  "required": ["company", "current_status", "main_problem", "problems", "priority_actions", "priority_tasks", "recommended_actions", "30_days", "60_days", "90_days", "boundary"],
+  "properties": {
+    "company": {"type": "string"},
+    "current_status": {"type": "string"},
+    "main_problem": {"type": "string"},
+    "problems": {"type": "array", "items": {"type": "string"}},
+    "priority_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["priority", "task", "action", "basis"],
+        "properties": {
+          "priority": {"type": "string", "enum": ["P0", "P1", "P2", "P3"]},
+          "task": {"type": "string"},
+          "action": {"type": "string"},
+          "basis": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "priority_tasks": {"type": "array", "items": {"type": "string"}},
+    "recommended_actions": {"type": "array", "items": {"type": "string"}},
+    "30_days": {"type": "string"},
+    "60_days": {"type": "string"},
+    "90_days": {"type": "string"},
+    "boundary": {"type": "string"}
+  },
+  "additionalProperties": false
+}

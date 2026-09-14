@@ -35,6 +35,11 @@ class DiagnosticResult:
     optimization_tasks: dict[str, Any] = field(default_factory=dict)
     diagnosis_summary: dict[str, Any] = field(default_factory=dict)
     geo_prescription: dict[str, Any] = field(default_factory=dict)
+    ai_visibility: dict[str, Any] = field(default_factory=dict)
+    eeat_score: dict[str, Any] = field(default_factory=dict)
+    geo_gap: dict[str, Any] = field(default_factory=dict)
+    growth_score: dict[str, Any] = field(default_factory=dict)
+    growth_prescription: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return to_dict(self)

@@ -1,4 +1,14 @@
-# GEO-BD / GEO Diagnostic Engine
+# GEO-BD V3
+
+企业 AI 认知诊断与 GEO 增长处方系统。仓库根目录可直接运行：
+
+```bash
+python3 main.py
+```
+
+默认以德州拓晟 Golden Case 生成 `output/`；实际客户可指定 `--input client.json --output output/client`。
+
+## 项目说明
 
 企业 GEO 诊断引擎仓库。核心代码与文档都放在
 [geo-account-precheck/](geo-account-precheck/)：

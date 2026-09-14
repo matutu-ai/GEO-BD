@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GEO AI Visibility Diagnosis",
+  "type": "object",
+  "required": ["brand_recognition", "business_understanding", "trust_level", "recommend_probability", "visibility_stage", "issues"],
+  "properties": {
+    "brand_recognition": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "business_understanding": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "trust_level": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "recommend_probability": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "visibility_stage": {"type": "string", "enum": ["UNKNOWN", "KNOWN", "UNDERSTAND", "TRUST", "RECOMMEND"]},
+    "issues": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

@@ -329,6 +329,21 @@
     },
     "geo_prescription": {
       "$ref": "geo_prescription_schema.json"
+    },
+    "ai_visibility": {
+      "$ref": "ai_visibility.schema.json"
+    },
+    "eeat_score": {
+      "$ref": "eeat_score.schema.json"
+    },
+    "geo_gap": {
+      "$ref": "geo_gap.schema.json"
+    },
+    "growth_score": {
+      "$ref": "growth_score.schema.json"
+    },
+    "growth_prescription": {
+      "$ref": "prescription.schema.json"
     }
   },
   "additionalProperties": false

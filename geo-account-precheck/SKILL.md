@@ -81,7 +81,9 @@ V3 默认 `executive`：
 
 诊断结果同时包含 `final_summary`。它是只读归纳层，不重新分析或生成事实；`--report-level all` 会输出运营人员可直接阅读的 `geo_summary.md`。未知内容使用 `【需客户补充真实资料】`，受限业务不得被总结成企业定位。
 
-诊断完成后还会经过 `DiagnosisAgent -> PrescriptionAgent`：`ai_diagnosis_summary` 只输出企业 AI 现状，`geo_prescription` 只输出定位、信息资产、专业能力和信任体系四类能力处方。两者不生成关键词、画像、内容标题或发布排期；这些执行内容属于后续 GEO。
+诊断完成后还会经过 `AIVisibilityAgent -> EEATTrustAgent -> GEOGapAgent -> DiagnosisAgent -> PrescriptionAgent`：输出企业 AI 可见度、EEAT 信任、GEO 缺口、AI 诊断和增长处方。`growth_prescription.json` 是后续 GEO Skill 的结构化输入；GEO-BD 不生成关键词、画像、内容标题或发布排期。
+
+运行 `python3 main.py` 默认以 Golden Case 生成 `output/`：包含 `GEO_AI诊断报告.md`、企业定位、GEO 缺口、EEAT、竞争分析、增长处方，以及各 Agent 的 JSON 输出。
 
 同一命令还会在 `all` 模式生成 `ai_learning_pack.md` 与 `ai_learning_pack.json`。两者严格等同于本 Skill 的 V1 摘要导出：复用 `diagnostic_skill.py`、九段报告模板和 V1 Schema，不建立另一套业务字段；相较完整 `diagnostic.json`，它适合作为豆包、千问等平台的首次学习上下文。
 

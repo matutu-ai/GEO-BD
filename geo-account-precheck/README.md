@@ -130,7 +130,7 @@ V3 默认不再把 20 个数据块一次全部堆给用户。CLI 提供三层 Ma
 
 `final_summary` 是挂在 `diagnostic.json` 上的运营决策总结，只读取已有诊断结果，不重新生成关键词或事实。使用 `--report-level all` 时会额外写出 `geo_summary.md`，包含客户阶段、AI 认知、企业实体、Query 缺口、核心问题和 P0/P1/P2 方向；未知内容标记为 `【需客户补充真实资料】`。
 
-`diagnosis_summary` 与 `geo_prescription` 是独立的运营交接层：前者只总结企业定位、公开信息状态、AI 认知、核心问题和当前阶段；后者只输出 P1/P2 能力模块处方，不生成关键词、画像或内容执行项。`--report-level all` 会额外生成 `ai_diagnosis_summary.md/json`、`geo_prescription.md/json` 和组合版 `final_report.md`。
+`ai_visibility`、`eeat_score`、`geo_gap`、`growth_score` 与 `growth_prescription` 是 V3 的企业 AI 增长诊断层：它们复用已有真实 AI Observation、EEAT、GEO Gap 和企业实体评分，不重复推断事实。`growth_prescription.json` 是后续 GEO Skill 的结构化输入，只描述问题和能力模块，不生成关键词、画像或内容执行项。`--report-level all` 会额外生成 `GEO_AI诊断报告.md`、企业定位/缺口/EEAT/竞争/处方 Markdown，以及对应 JSON。
 
 `ai_learning_pack.md` / `ai_learning_pack.json` 是给豆包、千问等下游 AI 的 Skill 导出包，严格复用 `skills/geo-bd-diagnostic-skill/references/diagnostic-output.schema.json`、`diagnostic_skill.py` 和九段报告模板，不新增平行业务字段。该 V1 摘要比完整 `diagnostic.json` 更适合首次学习和重复投喂。
 
@@ -215,6 +215,9 @@ python3 scripts/run_diagnostic.py \
   --output reports/v3-all \
   --needs-input reports/needs-input.md \
   --offline
+
+# V3 增长诊断：默认运行德州拓晟 Golden Case 并写入 output/
+python3 main.py
 
 # 强制回退到旧 V2 19 章节 Markdown
 python3 scripts/run_diagnostic.py \

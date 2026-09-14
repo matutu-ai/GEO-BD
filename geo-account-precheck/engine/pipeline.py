@@ -35,10 +35,14 @@ from .summary import (
 )
 from .summary.intelligence import normalize_observation
 from .validation.evaluator import ValidationEvaluator
+from agents.ai_visibility_agent import AIVisibilityAgent
 from agents.diagnosis_agent import DiagnosisAgent
+from agents.eeat_agent import EEATTrustAgent
 from agents.final_summary_agent import FinalSummaryAgent
+from agents.geo_gap_agent import GEOGapAgent
 from agents.optimization_task_agent import OptimizationTaskAgent
 from agents.prescription_agent import PrescriptionAgent
+from utils.scoring import calculate_geo_score
 
 
 def build_evidence_items(data: dict[str, Any]) -> list[EvidenceItem]:
@@ -241,6 +245,13 @@ class DiagnosticPipeline:
         result.optimization_tasks = OptimizationTaskAgent().build(result.to_dict())
         result.diagnosis_summary = DiagnosisAgent().build(result.to_dict())
         result.geo_prescription = PrescriptionAgent().build(result.diagnosis_summary)
+        result.ai_visibility = AIVisibilityAgent().build(result.to_dict())
+        result.eeat_score = EEATTrustAgent().build(result.to_dict())
+        result.geo_gap = GEOGapAgent().build(result.to_dict())
+        result.growth_score = calculate_geo_score(
+            result.to_dict(), result.ai_visibility, result.eeat_score, result.geo_gap
+        )
+        result.growth_prescription = PrescriptionAgent().build_growth(result.to_dict())
         result.final_summary = FinalSummaryAgent().build(result.to_dict())
         return result.to_dict()
 

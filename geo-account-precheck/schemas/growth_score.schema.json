@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GEO Growth Score",
+  "type": "object",
+  "required": ["total", "status", "dimensions", "weights", "stage", "basis"],
+  "properties": {
+    "total": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
+    "status": {"type": "string"},
+    "dimensions": {"type": "object", "additionalProperties": {"type": ["integer", "null"], "minimum": 0, "maximum": 100}},
+    "weights": {"type": "object", "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}},
+    "stage": {"type": "string"},
+    "basis": {"type": "string"}
+  },
+  "additionalProperties": false
+}

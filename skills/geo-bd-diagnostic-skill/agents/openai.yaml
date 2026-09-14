@@ -1,4 +1,4 @@
 interface:
   display_name: "GEO-BD Diagnostic Skill"
-  short_description: "企业 GEO 优化前诊断、背调与优化路线"
-  default_prompt: "使用 $geo-bd-diagnostic-skill 对这家企业做 GEO 优化前诊断，并输出九部分诊断报告。"
+  short_description: "快速诊断企业 AI 可见度并交接增长处方"
+  default_prompt: "使用 $geo-bd-diagnostic-skill 对这家企业做 GEO 前诊断；复用一份可追溯资料，先输出当前 AI 阶段、最大问题、优先任务和复测条件，再提供完整九部分报告。"

@@ -26,6 +26,14 @@ from agents.optimization_task_agent import render_optimization_tasks  # noqa: E4
 from agents.diagnosis_agent import render_diagnosis_summary  # noqa: E402
 from agents.prescription_agent import render_geo_prescription  # noqa: E402
 from engine.learning_pack import build_ai_learning_pack, render_ai_learning_pack  # noqa: E402
+from engine.reporting.growth_report import (  # noqa: E402
+    render_competition_report,
+    render_eeat_report,
+    render_gap_map,
+    render_growth_prescription,
+    render_growth_report,
+    render_positioning_report,
+)
 
 
 def render_input_template() -> str:
@@ -111,6 +119,17 @@ def _write_all_reports(
     _write(directory / "geo_prescription.md", render_geo_prescription(diagnostic.get("geo_prescription") or {}) + "\n")
     _write(directory / "geo_prescription.json", _json_text(diagnostic.get("geo_prescription") or {}))
     _write(directory / "final_report.md", _render_final_handoff(diagnostic) + "\n")
+    _write(directory / "GEO_AI诊断报告.md", render_growth_report(diagnostic))
+    _write(directory / "企业定位分析.md", render_positioning_report(diagnostic))
+    _write(directory / "GEO缺口地图.md", render_gap_map(diagnostic))
+    _write(directory / "EEAT评分报告.md", render_eeat_report(diagnostic))
+    _write(directory / "竞争分析.md", render_competition_report(diagnostic))
+    _write(directory / "GEO优化处方.md", render_growth_prescription(diagnostic))
+    _write(directory / "ai_visibility.json", _json_text(diagnostic.get("ai_visibility") or {}))
+    _write(directory / "eeat_score.json", _json_text(diagnostic.get("eeat_score") or {}))
+    _write(directory / "geo_gap.json", _json_text(diagnostic.get("geo_gap") or {}))
+    _write(directory / "growth_prescription.json", _json_text(diagnostic.get("growth_prescription") or {}))
+    _write(directory / "growth_score.json", _json_text(diagnostic.get("growth_score") or {}))
     learning_pack = build_ai_learning_pack(diagnostic)
     _write(directory / "ai_learning_pack.md", render_ai_learning_pack(learning_pack) + "\n")
     _write(directory / "ai_learning_pack.json", _json_text(learning_pack))
