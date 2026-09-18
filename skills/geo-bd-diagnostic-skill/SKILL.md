@@ -1,114 +1,130 @@
 ---
 name: geo-bd-diagnostic-skill
-description: 企业 AI 搜索可见度诊断与 GEO 增长处方：基于官网、资料、真实 AI 观察、Evidence 与竞品数据，诊断企业被 AI 理解、信任和推荐的缺口，并交接给后续 GEO 执行；不负责内容生产或长期运营。
+description: 根据客户名称或基础资料快速生成一页 GEO 诊断，输出客户定位、当前 AI/GEO 状态、最多五个主要问题和 P0/P1/P2 优化方向。当用户需要快速看懂客户现状和下一步方向时使用；不生成关键词、画像、内容、发布计划或媒体投放计划。
 ---
 
-# GEO-BD V3
+# GEO-BD Diagnostic Skill
 
 ## Purpose
 
-企业 AI 搜索可见度诊断与增长处方引擎。它诊断企业当前 AI 认知状态、问题原因和优化优先级，并将结构化处方交接给后续 GEO Skill。
-
-输出：企业定位诊断、AI 认知评分、EEAT 信任评分、GEO 缺口地图和增长处方。
-
-这个 Skill 是 GEO 生态的诊断入口。它只负责回答“企业当前是什么状态、AI 怎么理解、为什么不被推荐、下一步先优化什么”，结果交给后续 GEO Strategy 和 GEO Production 使用。
-
-## 快速执行
-
-先把客户输入归并为一份结构化资料，再复用同一份事实完成所有评分、缺口和处方；不要让多个 Agent 重复读取官网、产品、案例和资质。
-
-1. 只抽取能追溯来源的企业事实；未知资料直接标记 `UNKNOWN`。
-2. 只将 `observed/provided` AI 观察写入 AI 可见度、推荐和 Query 评分；`simulated/unknown` 仅可用于设计复测问题。
-3. 由同一诊断结果依次生成 AI Visibility、EEAT、GEO Gap 和 Growth Prescription，不重新研究企业或扩展到 GEO 执行层。
-4. 默认输出运营摘要与结构化 JSON；仅在运营人员需要溯源时展开九部分完整报告。
-
-这条路径优先保证读取少、输出短、事实可追溯。
-
-## 工作流
+GEO-BD 是轻量企业 GEO 快速诊断入口，不是背调平台或内容生产工具。它内部负责：
 
 ```text
-Client Materials
-  -> Material Intelligence
-  -> Enterprise Profile
-  -> AI Visibility
-  -> Query Intelligence
-  -> Evidence / E-E-A-T / E-E-A-P
-  -> Competitor Gap
-  -> GEO Score
-  -> Insight Engine
-  -> AI Visibility / EEAT / GEO Gap
-  -> Growth Prescription
-  -> GEO Diagnostic Report
+事实 → 判断 → 根因 → 处方
 ```
 
-1. 企业资料采集与定位：识别企业是谁、卖什么、服务谁、解决什么问题、可证明的选择理由。
-2. AI 可见度：只用真实 AI 观察检测 `UNKNOWN -> KNOWN -> UNDERSTAND -> TRUST -> RECOMMEND`。
-3. 信任与缺口：评分 EEAT，识别定位、场景、案例、信任、引用和专业表达缺口。
-4. 增长处方：按问题、原因、影响和优先级交接 30/60/90 天能力建设方向。
+对外只回答“客户是谁、AI 怎么看、主要问题、下一步方向”。处方描述应修复的能力、
+依据和验收方法；后续关键词、画像、内容、发布、运营和复测执行全部交给 GEO。
 
-诊断报告之后的运营交接由 `AIVisibilityAgent -> EEATTrustAgent -> GEOGapAgent -> DiagnosisAgent -> PrescriptionAgent` 完成：输出企业当前 AI 认知、信任评分、增长缺口和能力模块处方，不进入 GEO 执行层，不生成关键词、画像、内容标题或发布排期。`growth_prescription.json` 是后续 GEO Skill 的结构化输入。
+## Standard Workflow
 
-## 默认输出
-
-`python3 main.py` 或 `python3 geo-account-precheck/main.py` 生成：
-
-- `GEO_AI诊断报告.md`
-- `企业定位分析.md`
-- `GEO缺口地图.md`
-- `EEAT评分报告.md`
-- `竞争分析.md`
-- `GEO优化处方.md`
-- `ai_visibility.json`、`eeat_score.json`、`geo_gap.json`、`growth_prescription.json`
-
-对运营人员，先给出四项结论：当前 AI 阶段、最大问题、P0/P1 任务、下一次复测条件。完整九部分报告保留用于溯源，不以冗长叙述替代结构化字段。
-
-## 交互提示层
-
-`geo-account-precheck/interaction/` 提供按诊断节点调用的用户提示：`welcome`、`intake`、`diagnosis`、`competition`、`visibility`、`personas`、`prescription`、`report`。通过 `interaction.render_prompt(stage, context)` 渲染；未提供的动态字段统一显示 `【需企业补充真实资料】`。
-
-交互层只解释当前节点、展示已知结果和引导下一步，不重新分析、不虚构排名，也不越过 GEO-BD 与 GEO 执行层的边界。
-
-先把客户材料整理为 `geo-account-precheck/inputs/diagnostic-template.json` 兼容的 JSON，再运行：
-
-```bash
-cd geo-account-precheck
-python3 scripts/run_geo_bd_diagnostic.py \
-  --input tests/cases/dezhou-tuosheng/company.json \
-  --output /tmp/geo-bd-diagnostic.md \
-  --json /tmp/geo-bd-diagnostic.json \
-  --offline
+```text
+客户输入 / 公开事实
+→ Facts
+→ Evidence Verification
+→ Diagnostic Measurements
+→ Judgments
+→ Root Causes
+→ Prescriptions
+→ Report Projection
 ```
 
-## 必须输出的九个部分
+执行规则：
 
-1. 企业当前状态
-2. AI 认知分析
-3. Query 覆盖分析：Brand、Business、Scenario、Commercial
-4. Evidence 可信度：Experience、Expertise、Evidence、Authority、Proof
-5. 竞品差距
-6. GEO Score：Entity、AI Visibility、Query Coverage、Evidence、Authority 各 20 分
-7. GEO 缺口
-8. P0-P3 优化建议
-9. 下一阶段执行路线
+1. 只采集客户明确提供、公开来源记录或真实观察到的资料。
+2. 每条 Fact 都保留来源 ID；无法确认的内容使用 `UNKNOWN`。
+3. Evidence Verification 记录核验方法、来源、冲突和结论。
+4. Diagnostic Measurement 必须引用 Fact 或 Evidence。
+5. Judgment 必须引用 Fact ID 或 Diagnostic Metric ID。
+6. Root Cause 必须引用 Judgment ID。
+7. Prescription 必须引用 Root Cause ID。
+8. Report Projection 只能读取和展示上述结果。
 
-五类分数必须来自现有诊断结果。缺失数据使用 `UNKNOWN`、`NOT_RUN` 或
-`INSUFFICIENT_DATA`；缺失类别不按 0 计入总分，五类数据齐全后才输出 100 分制总分。
+缺少依据时停止推导；不得为了报告完整而补写判断或处方。
 
-## 资料和事实边界
+内部 Facts、Evidence、Measurements、Judgments、Root Causes、Prescriptions 不直接
+展示给最终用户。
 
-- 客户材料可作为 `FACT`，来源标记为 `user_provided`，不能冒充外部核验事实。
-- 真实 AI 回答才可用于 AI 认知、推荐、引用和 Query 覆盖；`simulated` 永不计分。
-- 竞品必须有来源和 `candidate/confirmed` 状态，不能自动发明竞品。
-- Evidence 必须保留声明、来源、日期、核验状态和冲突信息。
-- 诊断分数是当前状态指标，不是任何 AI 平台的排名保证。
+## One-page Output
 
-## 代码路由
+最终输出固定为：
 
-- 主流程：`geo-account-precheck/engine/pipeline.py`
-- V1 输出适配：`geo-account-precheck/engine/reporting/diagnostic_skill.py`
-- V1 命令：`geo-account-precheck/scripts/run_geo_bd_diagnostic.py`
-- V1 Schema：`skills/geo-bd-diagnostic-skill/references/diagnostic-output.schema.json`
-- V1 报告模板：`skills/geo-bd-diagnostic-skill/references/report-template.md`
-- Golden Case：`geo-account-precheck/tests/cases/case_001_tuoshi_ventilation/`
+```text
+# 客户 GEO 快速诊断
+## 一、客户定位
+## 二、当前 AI / GEO 状态
+## 三、当前主要问题（最多 5 条）
+## 四、下一步优化方向（P0 / P1 / P2）
+## 五、诊断依据（3—5 条）
+```
 
-详细输出契约见 `references/diagnostic-contract.md`；只在需要检查字段或扩展输出时读取。
+报告控制在一页左右。禁止展示多套 Score、Gap、九大画像、关键词矩阵、内容矩阵、
+30/60/90 天计划、技术 Schema、Agent 运行过程或大段 JSON。
+
+## Forbidden Outputs
+
+本 Skill 不得生成：
+
+- 关键词或关键词扩展
+- 用户画像、客户画像、内容画像或搜索画像
+- 内容、标题、文章、FAQ 或脚本
+- 发布计划或固定 30/60/90 天运营计划
+- 媒体投放计划
+- 目标市场 Query
+- GEO 运营和复测执行结果
+
+外部真实测试 Query 可以作为 `PROVIDED` 或 `OBSERVED` Fact 使用，但不能由 GEO-BD
+自动生成。
+
+## Diagnostic Contract
+
+唯一标准 Schema 是：
+
+`../../geo-account-precheck/schemas/diagnostic.schema.json`
+
+标准顶层是内部合同；其中只有 `report_projection` 对用户可见：
+
+```text
+contract_version
+meta
+facts
+evidence_verification
+diagnostic_measurements
+judgments
+root_causes
+prescriptions
+report_projection
+```
+
+完整结构、ID 规则、状态矩阵和引用要求见
+[references/diagnostic-contract.md](references/diagnostic-contract.md)。需要检查字段或扩展输出
+时必须先读该文件。
+
+## Status Vocabulary
+
+唯一允许状态：
+
+```text
+VERIFIED
+OBSERVED
+PROVIDED
+INFERRED
+UNKNOWN
+NOT_RUN
+INSUFFICIENT_DATA
+```
+
+`INFERRED` 禁止进入 Facts。`UNKNOWN`、`NOT_RUN`、`INSUFFICIENT_DATA` 对应的
+Diagnostic Measurement 值必须是 `null`，不得自动变成 `0` 或 `100`。
+
+## Report Boundary
+
+报告层只做投影：字段映射、分组、展示裁剪和格式转换。报告层不得重新评分、生成
+Gap、形成新 Judgment、定位新 Root Cause、生成新 Prescription 或修改优先级。
+
+## Legacy Transition
+
+阶段 0 仅冻结合同，当前 Python Pipeline 和 V1/V2/V3 兼容输出仍然保留。旧输出使用
+`../../geo-account-precheck/schemas/diagnostic-legacy.schema.json`，不能作为标准合同样例。
+`references/diagnostic-output.schema.json` 和 `references/report-template.md` 仅保留为 Legacy
+兼容资料，后续阶段才允许迁移或退出。

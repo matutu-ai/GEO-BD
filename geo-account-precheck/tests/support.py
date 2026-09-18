@@ -31,7 +31,8 @@ def run_diagnostic(data: dict[str, Any] | None = None) -> dict[str, Any]:
 
 
 def validate_diagnostic(result: dict[str, Any]) -> list[str]:
-    return validate_against_schema_file(result, ROOT / "schemas" / "diagnostic.schema.json")
+    """Validate the unchanged pre-Contract-1.0 pipeline output."""
+    return validate_against_schema_file(result, ROOT / "schemas" / "diagnostic-legacy.schema.json")
 
 
 def render(result: dict[str, Any]) -> str:

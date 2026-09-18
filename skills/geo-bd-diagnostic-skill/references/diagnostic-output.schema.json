@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "GEO-BD Diagnostic Skill V1 Output",
+  "title": "GEO-BD Legacy Diagnostic Skill V1 Output",
+  "description": "Legacy compatibility schema retained during migration. It is not the GEO-BD Standard Diagnostic Contract.",
   "type": "object",
   "required": ["schema_version", "report_type", "company_status", "ai_cognition", "query_coverage", "evidence_trust", "competitor_gap", "geo_score", "geo_gaps", "priority_actions", "next_phase"],
   "properties": {

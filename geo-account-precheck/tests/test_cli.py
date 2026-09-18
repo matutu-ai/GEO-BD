@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RUN_DIAGNOSTIC = ROOT / "scripts" / "run_diagnostic.py"
 VALIDATE_DIAGNOSTIC = ROOT / "scripts" / "validate_diagnostic.py"
 SAMPLE = ROOT / "tests" / "fixtures" / "sample_company.json"
+LEGACY_SCHEMA = ROOT / "schemas" / "diagnostic-legacy.schema.json"
 
 
 def _run(script: Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -67,7 +68,13 @@ class RunDiagnosticCliTest(unittest.TestCase):
             report = json.loads(json_path.read_text(encoding="utf-8"))
             for key in ("meta", "entity", "ai_cognition", "query_matrix", "competitors", "evidence_graph", "scores"):
                 self.assertIn(key, report)
-            validation = _run(VALIDATE_DIAGNOSTIC, "--input", str(json_path))
+            validation = _run(
+                VALIDATE_DIAGNOSTIC,
+                "--input",
+                str(json_path),
+                "--schema",
+                str(LEGACY_SCHEMA),
+            )
             self.assertEqual(validation.returncode, 0, validation.stderr)
             self.assertIn("VALIDATION_OK", validation.stdout)
 
